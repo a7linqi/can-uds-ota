@@ -1,0 +1,14 @@
+{
+  "python_unittest": 22,
+  "cross_language": {
+    "valid": "accepted",
+    "bad-header": "rejected",
+    "bad-payload": "rejected",
+    "bad-signature": "rejected",
+    "noncanonical-scalar": "rejected",
+    "unsigned": "rejected",
+    "wrong-key": "rejected",
+    "truncated-signature": "rejected"
+  },
+  "hardware_verified": false
+}

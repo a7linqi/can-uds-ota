@@ -1,0 +1,2 @@
+# Optional actual python-can in-memory adapter test; not needed for the C bench.
+python-can==4.6.1

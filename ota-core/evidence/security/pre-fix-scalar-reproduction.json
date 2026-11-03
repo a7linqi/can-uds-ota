@@ -1,0 +1,17 @@
+{
+  "stage": "pre_fix_reproduction",
+  "issue": "Both C OTA verifier and Python verifier accept a noncanonical Ed25519 S+L encoding. This is signature malleability, not a new-message forgery.",
+  "results": {
+    "valid": {
+      "c_exit": 0,
+      "c_output": "C validator accepted Python IMG2: version=7 payload=19",
+      "python_accepted": true
+    },
+    "s_plus_l": {
+      "c_exit": 0,
+      "c_output": "C validator accepted Python IMG2: version=7 payload=19",
+      "python_accepted": true
+    }
+  },
+  "hardware_verified": false
+}

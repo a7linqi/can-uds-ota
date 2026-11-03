@@ -1,0 +1,25 @@
+{
+  "active_version": 0,
+  "pending_version": 0,
+  "min_version": 0,
+  "active_size": 0,
+  "pending_size": 0,
+  "active_crc32": 0,
+  "pending_crc32": 0,
+  "metadata_sequence": 0,
+  "flash_bytes": 1048576,
+  "metadata_valid": false,
+  "state": 0,
+  "boot_attempts": 0,
+  "state_name": "IDLE",
+  "metadata_only": true,
+  "backend": "C simulator",
+  "simulation_state": {
+    "target": 0,
+    "state": 0,
+    "active": 0,
+    "pending": 0,
+    "attempts": 0,
+    "metadata": 0
+  }
+}

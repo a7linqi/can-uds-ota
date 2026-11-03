@@ -1,0 +1,9 @@
+{
+  "tests": 45,
+  "failures": 0,
+  "skipped": 0,
+  "ecu": "native compiled C core in a child process",
+  "transport": "line-based virtual classic CAN",
+  "real_can_tested": false,
+  "hardware_verified": false
+}

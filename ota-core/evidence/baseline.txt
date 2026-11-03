@@ -1,0 +1,10 @@
+Baseline: original ota-core-L1.zip, unchanged source in a separate directory.
+Compiler: TinyCC 0.9.28rc, x86_64 Windows, -run mode.
+Observed output:
+ota-core host tests
+[crc]
+[isotp]
+[uds]
+[boot]
+
+236 checks, 0 failures

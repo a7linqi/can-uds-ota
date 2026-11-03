@@ -1,0 +1,52 @@
+COMMAND: C:\Users\li14\AppData\Local\Programs\Python\Python314\python.exe -m unittest discover -s tests_pc -v
+OTA_TEST_CC=D:\Project\Can\toolchain\tccbox-2025.10.27.data\purelib\tccbox\tcc_dist\tcc.exe
+test_bad_crc_stopped_before_sending (test_pc.CIntegration.test_bad_crc_stopped_before_sending) ... ok
+test_bad_sim_command_does_not_desynchronize (test_pc.CIntegration.test_bad_sim_command_does_not_desynchronize) ... ok
+test_block_counter_wrap (test_pc.CIntegration.test_block_counter_wrap) ... ok
+test_downgrade_rejected_by_c (test_pc.CIntegration.test_downgrade_rejected_by_c) ... ok
+test_download_power_cut_keeps_previous_app (test_pc.CIntegration.test_download_power_cut_keeps_previous_app) ... ok
+test_empty_metadata_status_over_can (test_pc.CIntegration.test_empty_metadata_status_over_can) ... ok
+test_extended_request_not_accepted_as_standard (test_pc.CIntegration.test_extended_request_not_accepted_as_standard) ... ok
+test_first_install_then_app_health (test_pc.CIntegration.test_first_install_then_app_health) ... ok
+test_healthy_second_version_commits (test_pc.CIntegration.test_healthy_second_version_commits) ... ok
+test_info_through_real_c_isotp (test_pc.CIntegration.test_info_through_real_c_isotp) ... ok
+test_install_checks_target_capacity (test_pc.CIntegration.test_install_checks_target_capacity) ... ok
+test_install_ready_without_downloading_again (test_pc.CIntegration.test_install_ready_without_downloading_again) ... ok
+test_install_rejects_empty_state (test_pc.CIntegration.test_install_rejects_empty_state) ... ok
+test_install_rejects_mismatched_local_package (test_pc.CIntegration.test_install_rejects_mismatched_local_package) ... ok
+test_lost_commit_ack_recovers_by_staged_install (test_pc.CIntegration.test_lost_commit_ack_recovers_by_staged_install) ... ok
+test_lost_commit_ack_stops_with_unknown_state (test_pc.CIntegration.test_lost_commit_ack_stops_with_unknown_state) ... ok
+test_lost_reset_ack_is_not_retried (test_pc.CIntegration.test_lost_reset_ack_is_not_retried) ... ok
+test_lost_transfer_ack_retried_without_rewrite (test_pc.CIntegration.test_lost_transfer_ack_retried_without_rewrite) ... ok
+test_no_reset_cannot_confirm_ready_package (test_pc.CIntegration.test_no_reset_cannot_confirm_ready_package) ... ok
+test_pending_response_does_not_resend_request (test_pc.CIntegration.test_pending_response_does_not_resend_request) ... ok
+test_ready_and_confirmed_status_over_can (test_pc.CIntegration.test_ready_and_confirmed_status_over_can) ... ok
+test_session_timing_resolution (test_pc.CIntegration.test_session_timing_resolution) ... ok
+test_unconfirmed_second_version_rolls_back (test_pc.CIntegration.test_unconfirmed_second_version_rolls_back) ... ok
+test_wrong_and_changed_repeat_block_rejected (test_pc.CIntegration.test_wrong_and_changed_repeat_block_rejected) ... ok
+test_ze_configuration (test_pc.CIntegration.test_ze_configuration) ... ok
+test_driver_failures_have_actionable_error (test_pc.CanBackend.test_driver_failures_have_actionable_error) ... ok
+test_explicit_options_and_send_budget (test_pc.CanBackend.test_explicit_options_and_send_budget) ... ok
+test_non_data_frames_are_filtered (test_pc.CanBackend.test_non_data_frames_are_filtered) ... ok
+test_cf_sequence_error (test_pc.ClientGuards.test_cf_sequence_error) ... ok
+test_classic_frame_bounds (test_pc.ClientGuards.test_classic_frame_bounds) ... ok
+test_fc_wait_limit (test_pc.ClientGuards.test_fc_wait_limit) ... ok
+test_flow_control_wait_obeys_total_deadline (test_pc.ClientGuards.test_flow_control_wait_obeys_total_deadline) ... ok
+test_frame_owns_immutable_data (test_pc.ClientGuards.test_frame_owns_immutable_data) ... ok
+test_malformed_identification_is_protocol_error (test_pc.ClientGuards.test_malformed_identification_is_protocol_error) ... ok
+test_malformed_single_frame (test_pc.ClientGuards.test_malformed_single_frame) ... ok
+test_malformed_status_is_rejected (test_pc.ClientGuards.test_malformed_status_is_rejected) ... ok
+test_multiframe_response_obeys_total_deadline (test_pc.ClientGuards.test_multiframe_response_obeys_total_deadline) ... ok
+test_oversize_response_sends_overflow (test_pc.ClientGuards.test_oversize_response_sends_overflow) ... ok
+test_p2star_bounds_total_timeout (test_pc.ClientGuards.test_p2star_bounds_total_timeout) ... ok
+test_preflight_rejects_extra_trailer (test_pc.ClientGuards.test_preflight_rejects_extra_trailer) ... ok
+test_real_backend_requires_explicit_selection (test_pc.ClientGuards.test_real_backend_requires_explicit_selection) ... ok
+test_request_deadline_must_be_finite (test_pc.ClientGuards.test_request_deadline_must_be_finite) ... ok
+test_stmin_cannot_extend_deadline (test_pc.ClientGuards.test_stmin_cannot_extend_deadline) ... ok
+test_wrong_negative_sid (test_pc.ClientGuards.test_wrong_negative_sid) ... ok
+test_wrong_positive_sid (test_pc.ClientGuards.test_wrong_positive_sid) ... ok
+
+----------------------------------------------------------------------
+Ran 45 tests in 5.779s
+
+OK

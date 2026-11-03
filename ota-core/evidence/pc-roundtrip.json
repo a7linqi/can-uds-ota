@@ -1,0 +1,643 @@
+{
+  "mode": "C ECU simulation",
+  "application_instructions_executed": false,
+  "health_confirmation": "test-fixture control calls C boot_confirm",
+  "hardware_verified": false,
+  "stages": [
+    {
+      "stage": "v1_confirmed",
+      "target": 1,
+      "state": 0,
+      "active": 1,
+      "pending": 0,
+      "attempts": 0,
+      "metadata": 1,
+      "uds_status": {
+        "active_version": 1,
+        "pending_version": 0,
+        "min_version": 1,
+        "active_size": 1503,
+        "pending_size": 0,
+        "active_crc32": 176094070,
+        "pending_crc32": 0,
+        "metadata_sequence": 6,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 0,
+        "boot_attempts": 0,
+        "state_name": "IDLE",
+        "metadata_only": true
+      }
+    },
+    {
+      "stage": "v2_trial",
+      "target": 1,
+      "state": 4,
+      "active": 1,
+      "pending": 2,
+      "attempts": 1,
+      "metadata": 1,
+      "uds_status": {
+        "active_version": 1,
+        "pending_version": 2,
+        "min_version": 1,
+        "active_size": 1503,
+        "pending_size": 1503,
+        "active_crc32": 176094070,
+        "pending_crc32": 1212359878,
+        "metadata_sequence": 11,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 4,
+        "boot_attempts": 1,
+        "state_name": "TRIAL",
+        "metadata_only": true
+      }
+    },
+    {
+      "stage": "v2_unconfirmed_restored_v1",
+      "target": 1,
+      "state": 0,
+      "active": 1,
+      "pending": 0,
+      "attempts": 0,
+      "metadata": 1,
+      "uds_status": {
+        "active_version": 1,
+        "pending_version": 0,
+        "min_version": 1,
+        "active_size": 1503,
+        "pending_size": 0,
+        "active_crc32": 176094070,
+        "pending_crc32": 0,
+        "metadata_sequence": 15,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 0,
+        "boot_attempts": 0,
+        "state_name": "IDLE",
+        "metadata_only": true
+      }
+    },
+    {
+      "stage": "v2_confirmed",
+      "target": 1,
+      "state": 0,
+      "active": 2,
+      "pending": 0,
+      "attempts": 0,
+      "metadata": 1,
+      "uds_status": {
+        "active_version": 2,
+        "pending_version": 0,
+        "min_version": 2,
+        "active_size": 1503,
+        "pending_size": 0,
+        "active_crc32": 1212359878,
+        "pending_crc32": 0,
+        "metadata_sequence": 21,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 0,
+        "boot_attempts": 0,
+        "state_name": "IDLE",
+        "metadata_only": true
+      }
+    },
+    {
+      "stage": "download_cut_retained_v2",
+      "target": 1,
+      "state": 1,
+      "active": 2,
+      "pending": 0,
+      "attempts": 0,
+      "metadata": 1,
+      "uds_status": {
+        "active_version": 2,
+        "pending_version": 0,
+        "min_version": 2,
+        "active_size": 1503,
+        "pending_size": 0,
+        "active_crc32": 1212359878,
+        "pending_crc32": 0,
+        "metadata_sequence": 22,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 1,
+        "boot_attempts": 0,
+        "state_name": "DOWNLOADING",
+        "metadata_only": true
+      }
+    },
+    {
+      "stage": "fresh_download_v3_confirmed",
+      "target": 1,
+      "state": 0,
+      "active": 3,
+      "pending": 0,
+      "attempts": 0,
+      "metadata": 1,
+      "uds_status": {
+        "active_version": 3,
+        "pending_version": 0,
+        "min_version": 3,
+        "active_size": 1503,
+        "pending_size": 0,
+        "active_crc32": 3230100585,
+        "pending_crc32": 0,
+        "metadata_sequence": 28,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 0,
+        "boot_attempts": 0,
+        "state_name": "IDLE",
+        "metadata_only": true
+      }
+    }
+  ],
+  "events": [
+    {
+      "event": "package_preflight",
+      "version": 1,
+      "payload_bytes": 1503,
+      "package_bytes": 1599,
+      "load_address": "0x8010000",
+      "payload_crc32": "0A7EFB76",
+      "package_sha256": "5587eda13a31e91257a44f18a918863aa1c859b9f26501b285b15b30fa621032",
+      "signature_verified": false,
+      "signed": true
+    },
+    {
+      "event": "request_started",
+      "sid": "10",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 6
+    },
+    {
+      "event": "programming_unlocked",
+      "p2_s": 0.05,
+      "p2_star_s": 5.0,
+      "security": "demo_seed_key"
+    },
+    {
+      "event": "request_started",
+      "sid": "34",
+      "bytes": 11
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 1,
+      "offset": 0,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 2,
+      "offset": 510,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 3,
+      "offset": 1020,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 71
+    },
+    {
+      "event": "block_accepted",
+      "counter": 4,
+      "offset": 1530,
+      "bytes": 69
+    },
+    {
+      "event": "request_started",
+      "sid": "37",
+      "bytes": 1
+    },
+    {
+      "event": "request_started",
+      "sid": "31",
+      "bytes": 4
+    },
+    {
+      "event": "download_committed",
+      "blocks": 4
+    },
+    {
+      "event": "request_started",
+      "sid": "11",
+      "bytes": 2
+    },
+    {
+      "event": "reset_requested"
+    },
+    {
+      "event": "request_started",
+      "sid": "22",
+      "bytes": 3
+    },
+    {
+      "event": "package_preflight",
+      "version": 2,
+      "payload_bytes": 1503,
+      "package_bytes": 1599,
+      "load_address": "0x8010000",
+      "payload_crc32": "484324C6",
+      "package_sha256": "9d0d6cfda5d62d58dfe85289f3e1b275a2f803e899c012fadb44ea20263f62d3",
+      "signature_verified": false,
+      "signed": true
+    },
+    {
+      "event": "request_started",
+      "sid": "10",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 6
+    },
+    {
+      "event": "programming_unlocked",
+      "p2_s": 0.05,
+      "p2_star_s": 5.0,
+      "security": "demo_seed_key"
+    },
+    {
+      "event": "request_started",
+      "sid": "34",
+      "bytes": 11
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 1,
+      "offset": 0,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 2,
+      "offset": 510,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 3,
+      "offset": 1020,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 71
+    },
+    {
+      "event": "block_accepted",
+      "counter": 4,
+      "offset": 1530,
+      "bytes": 69
+    },
+    {
+      "event": "request_started",
+      "sid": "37",
+      "bytes": 1
+    },
+    {
+      "event": "request_started",
+      "sid": "31",
+      "bytes": 4
+    },
+    {
+      "event": "download_committed",
+      "blocks": 4
+    },
+    {
+      "event": "request_started",
+      "sid": "11",
+      "bytes": 2
+    },
+    {
+      "event": "reset_requested"
+    },
+    {
+      "event": "request_started",
+      "sid": "22",
+      "bytes": 3
+    },
+    {
+      "event": "request_started",
+      "sid": "22",
+      "bytes": 3
+    },
+    {
+      "event": "package_preflight",
+      "version": 2,
+      "payload_bytes": 1503,
+      "package_bytes": 1599,
+      "load_address": "0x8010000",
+      "payload_crc32": "484324C6",
+      "package_sha256": "9d0d6cfda5d62d58dfe85289f3e1b275a2f803e899c012fadb44ea20263f62d3",
+      "signature_verified": false,
+      "signed": true
+    },
+    {
+      "event": "request_started",
+      "sid": "10",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 6
+    },
+    {
+      "event": "programming_unlocked",
+      "p2_s": 0.05,
+      "p2_star_s": 5.0,
+      "security": "demo_seed_key"
+    },
+    {
+      "event": "request_started",
+      "sid": "34",
+      "bytes": 11
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 1,
+      "offset": 0,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 2,
+      "offset": 510,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 3,
+      "offset": 1020,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 71
+    },
+    {
+      "event": "block_accepted",
+      "counter": 4,
+      "offset": 1530,
+      "bytes": 69
+    },
+    {
+      "event": "request_started",
+      "sid": "37",
+      "bytes": 1
+    },
+    {
+      "event": "request_started",
+      "sid": "31",
+      "bytes": 4
+    },
+    {
+      "event": "download_committed",
+      "blocks": 4
+    },
+    {
+      "event": "request_started",
+      "sid": "11",
+      "bytes": 2
+    },
+    {
+      "event": "reset_requested"
+    },
+    {
+      "event": "request_started",
+      "sid": "22",
+      "bytes": 3
+    },
+    {
+      "event": "package_preflight",
+      "version": 3,
+      "payload_bytes": 1503,
+      "package_bytes": 1599,
+      "load_address": "0x8010000",
+      "payload_crc32": "C0876C69",
+      "package_sha256": "d5c15d3075b482bf3d14ccdb4566c047d4bc880bddb06fee526f1f79ffbda7fc",
+      "signature_verified": false,
+      "signed": true
+    },
+    {
+      "event": "request_started",
+      "sid": "10",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 6
+    },
+    {
+      "event": "programming_unlocked",
+      "p2_s": 0.05,
+      "p2_star_s": 5.0,
+      "security": "demo_seed_key"
+    },
+    {
+      "event": "request_started",
+      "sid": "34",
+      "bytes": 11
+    },
+    {
+      "event": "expected_simulated_power_loss",
+      "storage_byte_budget": 100
+    },
+    {
+      "event": "request_started",
+      "sid": "22",
+      "bytes": 3
+    },
+    {
+      "event": "package_preflight",
+      "version": 3,
+      "payload_bytes": 1503,
+      "package_bytes": 1599,
+      "load_address": "0x8010000",
+      "payload_crc32": "C0876C69",
+      "package_sha256": "d5c15d3075b482bf3d14ccdb4566c047d4bc880bddb06fee526f1f79ffbda7fc",
+      "signature_verified": false,
+      "signed": true
+    },
+    {
+      "event": "request_started",
+      "sid": "10",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 2
+    },
+    {
+      "event": "request_started",
+      "sid": "27",
+      "bytes": 6
+    },
+    {
+      "event": "programming_unlocked",
+      "p2_s": 0.05,
+      "p2_star_s": 5.0,
+      "security": "demo_seed_key"
+    },
+    {
+      "event": "request_started",
+      "sid": "34",
+      "bytes": 11
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 1,
+      "offset": 0,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 2,
+      "offset": 510,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 512
+    },
+    {
+      "event": "block_accepted",
+      "counter": 3,
+      "offset": 1020,
+      "bytes": 510
+    },
+    {
+      "event": "request_started",
+      "sid": "36",
+      "bytes": 71
+    },
+    {
+      "event": "block_accepted",
+      "counter": 4,
+      "offset": 1530,
+      "bytes": 69
+    },
+    {
+      "event": "request_started",
+      "sid": "37",
+      "bytes": 1
+    },
+    {
+      "event": "request_started",
+      "sid": "31",
+      "bytes": 4
+    },
+    {
+      "event": "download_committed",
+      "blocks": 4
+    },
+    {
+      "event": "request_started",
+      "sid": "11",
+      "bytes": 2
+    },
+    {
+      "event": "reset_requested"
+    },
+    {
+      "event": "request_started",
+      "sid": "22",
+      "bytes": 3
+    }
+  ]
+}

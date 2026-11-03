@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "stage": "original_internal_flash_backup",
+  "captured_at": "2026-11-02T20:43:53.0540113+08:00",
+  "manifest_path": "backups\\board-original\\20261102_204315_470\\backup-manifest.json",
+  "manifest_sha256": "f4ae89608c3184f018528955a57f3e90f3737fda12317f4b067e371e78104f69",
+  "files": [
+    {
+      "path": "backups\\board-original\\20261102_204315_470\\internal-flash-original.bin",
+      "bytes": 1048576,
+      "sha256": "a919efd8201a2d86b479baeb7ab327a90c28eaefd443b937364f42562b7e367c"
+    },
+    {
+      "path": "backups\\board-original\\20261102_204315_470\\internal-flash-readback.bin",
+      "bytes": 1048576,
+      "sha256": "a919efd8201a2d86b479baeb7ab327a90c28eaefd443b937364f42562b7e367c"
+    }
+  ],
+  "backup_log_sha256": "361ba713227a07b6affdb5ecc7c4e739be6e472f97786d90174bec26f0fead43",
+  "internal_flash_backup_completed": true,
+  "nor_backup_completed": false,
+  "eeprom_backup_completed": false,
+  "project_firmware_hardware_execution_verified": false
+}

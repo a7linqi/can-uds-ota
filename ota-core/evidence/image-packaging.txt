@@ -1,0 +1,51 @@
+test_modified_message (test_ed25519.Ed25519Tests.test_modified_message) ... ok
+test_noncanonical_point_y (test_ed25519.Ed25519Tests.test_noncanonical_point_y) ... ok
+test_noncanonical_scalar (test_ed25519.Ed25519Tests.test_noncanonical_scalar) ... ok
+test_out_of_range_scalars (test_ed25519.Ed25519Tests.test_out_of_range_scalars) ... ok
+test_rfc8032_vectors (test_ed25519.Ed25519Tests.test_rfc8032_vectors) ... ok
+test_wrong_lengths (test_ed25519.Ed25519Tests.test_wrong_lengths) ... ok
+test_wrong_public_key (test_ed25519.Ed25519Tests.test_wrong_public_key) ... ok
+test_zero_x_with_sign_bit (test_ed25519.Ed25519Tests.test_zero_x_with_sign_bit) ... ok
+test_bad_capacity (test_make_image.PackageTests.test_bad_capacity) ... ok
+test_ccm_stack (test_make_image.PackageTests.test_ccm_stack) ... ok
+test_exact_ze_capacity (test_make_image.PackageTests.test_exact_ze_capacity) ... ok
+test_header_crc (test_make_image.PackageTests.test_header_crc) ... ok
+test_invalid_ram (test_make_image.PackageTests.test_invalid_ram) ... ok
+test_large_version (test_make_image.PackageTests.test_large_version) ... ok
+test_missing_thumb (test_make_image.PackageTests.test_missing_thumb) ... ok
+test_outside_payload (test_make_image.PackageTests.test_outside_payload) ... ok
+test_over_ze_capacity (test_make_image.PackageTests.test_over_ze_capacity) ... ok
+test_short (test_make_image.PackageTests.test_short) ... ok
+test_stack_alignment (test_make_image.PackageTests.test_stack_alignment) ... ok
+test_wire_header (test_make_image.PackageTests.test_wire_header) ... ok
+test_wrong_link (test_make_image.PackageTests.test_wrong_link) ... ok
+test_zero_version (test_make_image.PackageTests.test_zero_version) ... ok
+
+----------------------------------------------------------------------
+Ran 22 tests in 0.272s
+
+OK
+
+valid: exit=0
+C validator accepted Python IMG2: version=7 payload=19
+
+bad-header: exit=1
+C validator rejected package
+
+bad-payload: exit=1
+C validator rejected package
+
+bad-signature: exit=1
+C validator rejected package
+
+noncanonical-scalar: exit=1
+C validator rejected package
+
+unsigned: exit=1
+C validator rejected package
+
+wrong-key: exit=1
+C validator rejected package
+
+truncated-signature: exit=1
+C validator rejected package

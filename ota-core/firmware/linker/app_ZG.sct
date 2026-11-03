@@ -1,0 +1,9 @@
+; Generated STUB layout: app_ZG_UNCONFIGURED
+LR_IROM1 0x08010000 0xF0000 {
+  ER_IROM1 0x08010000 0xF0000 {
+    startup_stm32f407xx.o (RESET, +First)
+    *(InRoot$$Sections)
+    .ANY (+RO)
+  }
+  RW_IRAM1 0x20000000 0x20000 { .ANY (+RW +ZI) }
+}

@@ -1,0 +1,86 @@
+{
+  "hardware_verified": false,
+  "target_linked": false,
+  "host_adapters": [
+    {
+      "flash_kib": 1024,
+      "gates_enabled": 0,
+      "checks": 177,
+      "failures": 0
+    },
+    {
+      "flash_kib": 1024,
+      "gates_enabled": 1,
+      "checks": 243,
+      "failures": 0
+    },
+    {
+      "flash_kib": 512,
+      "gates_enabled": 0,
+      "checks": 177,
+      "failures": 0
+    },
+    {
+      "flash_kib": 512,
+      "gates_enabled": 1,
+      "checks": 243,
+      "failures": 0
+    }
+  ],
+  "project_semantics": [
+    {
+      "name": "bootloader_ZG_UNCONFIGURED",
+      "sources": 28,
+      "base": "0x8000000",
+      "length": "0x10000"
+    },
+    {
+      "name": "bootloader_ZE_UNCONFIGURED",
+      "sources": 28,
+      "base": "0x8000000",
+      "length": "0x10000"
+    },
+    {
+      "name": "app_ZG_UNCONFIGURED",
+      "sources": 28,
+      "base": "0x8010000",
+      "length": "0xf0000"
+    },
+    {
+      "name": "app_ZE_UNCONFIGURED",
+      "sources": 28,
+      "base": "0x8010000",
+      "length": "0x70000"
+    }
+  ],
+  "arm_objects": [
+    {
+      "flash_kib": 1024,
+      "image": "bootloader",
+      "objects": 27,
+      "exit": 0
+    },
+    {
+      "flash_kib": 1024,
+      "image": "app",
+      "objects": 27,
+      "exit": 0
+    },
+    {
+      "flash_kib": 512,
+      "image": "bootloader",
+      "objects": 27,
+      "exit": 0
+    },
+    {
+      "flash_kib": 512,
+      "image": "app",
+      "objects": 27,
+      "exit": 0
+    }
+  ],
+  "hal_reference_syntax": {
+    "exit": 0,
+    "linked": false
+  }
+}

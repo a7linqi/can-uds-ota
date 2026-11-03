@@ -1,0 +1,77 @@
+# ---------- 工具链（约 1.8 GB，从系统安装，不入库） ----------
+toolchain/
+toolchain-cache/
+
+# ---------- 编译产物 ----------
+build/
+**/build/
+*.o
+*.obj
+*.elf
+*.axf
+*.hex
+*.map
+*.lst
+*.d
+*.crf
+*.dep
+*.lnp
+
+# 固件 BIN 与任意二进制固件（含备份、提取物）不入库
+*.bin
+
+# ---------- 真实硬件备份（第三方版权资源，禁止公开） ----------
+# backups/ 内含正点原子综合例程资源（图片/音乐/视频/NES ROM），
+# 以及屏幕触摸校准数据。这些不是本项目版权，绝不能提交到公开仓库。
+backups/
+**/extracted/
+
+# ---------- 大体积测试/模拟数据 ----------
+stages/board-lab/evidence/
+stages/board-lab-review/
+**/evidence/nor-sim*/
+**/evidence/*/pass1/
+**/evidence/*/pass2/
+**/sim-*/
+stages/*/build/
+
+# ---------- 内部协作与过程文档（不属于项目本体，不公开） ----------
+PHASE*.md
+HARNESS_TASKS.md
+PROJECT_TAKEOVER.md
+handover/
+stages/board-lab-review/
+stages/app-bringup/
+stages/storage-integration/
+stages/board-lab/STATUS.md
+ota-core/docs/CORE_REVIEW_20261102.md
+
+# ---------- 阶段性交付物 ----------
+deliverables/
+
+# ---------- 临时目录与日志 ----------
+build-temp/
+*.log
+*.tmp
+*.bak
+
+# ---------- 个人信息（简历相关，不公开） ----------
+RESUME_PROJECT_BRIEF.md
+board-docs/04-验证记录/*.bin
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# ---------- 编辑器 / 系统 ----------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini

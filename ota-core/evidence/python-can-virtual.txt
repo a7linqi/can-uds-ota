@@ -1,0 +1,13 @@
+python-can=4.6.1
+test_512_capacity (test_virtual.RealLibraryIntegration.test_512_capacity) ... ok
+test_flash_staged_install_and_health (test_virtual.RealLibraryIntegration.test_flash_staged_install_and_health) ... ok
+test_info_and_status (test_virtual.RealLibraryIntegration.test_info_and_status) ... ok
+test_no_peer_honors_receive_timeout (test_virtual.RealLibraryIntegration.test_no_peer_honors_receive_timeout) ... ok
+test_remote_error_extended_fd_and_other_ids_filtered (test_virtual.RealLibraryIntegration.test_remote_error_extended_fd_and_other_ids_filtered) ... ok
+test_tampered_signature_rejected (test_virtual.RealLibraryIntegration.test_tampered_signature_rejected) ... ok
+test_unsigned_cannot_replace_confirmed_app (test_virtual.RealLibraryIntegration.test_unsigned_cannot_replace_confirmed_app) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 1.143s
+
+OK

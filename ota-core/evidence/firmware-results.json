@@ -1,0 +1,25 @@
+{
+  "app_entry": [
+    {
+      "flash_kib": 1024,
+      "checks": 35,
+      "failures": 0,
+      "scenarios": 8
+    },
+    {
+      "flash_kib": 512,
+      "checks": 35,
+      "failures": 0,
+      "scenarios": 8
+    }
+  ],
+  "explorer_loopback_entry": {
+    "checks": 51,
+    "failures": 0,
+    "scenarios": 14,
+    "uses_real_entry_and_can_queue": true,
+    "physical_can_tested": false
+  },
+  "watchdog": "virtual timeout, not physical IWDG",
+  "hardware_verified": false
+}

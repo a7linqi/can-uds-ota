@@ -1,0 +1,8 @@
+{
+  "checks": 720,
+  "failures": 0,
+  "chip_profile": "W25Q128JV-IQ/JQ EF4018",
+  "evidence": "SPI command fixture",
+  "hardware_verified": false,
+  "transfer_failure_points": 31
+}

@@ -1,0 +1,2 @@
+COMMAND: D:\Project\Can\toolchain\tccbox-2025.10.27.data\purelib\tccbox\tcc_dist\tcc.exe -std=c99 -Wall -Wextra -Iinclude -Iplatform/stm32f407/include -DOTA_EXPLORER_CAN_LOOPBACK=1 platform/stm32f407/src/stm32_can.c -run tests_firmware/test_explorer_loopback.c
+Explorer loopback entry model: 51 checks, 0 failures; 14 scenarios

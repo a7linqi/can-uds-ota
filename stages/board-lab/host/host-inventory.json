@@ -1,0 +1,124 @@
+﻿{
+    "captured_at_local":  "2026-11-02T21:56:37.5366344+08:00",
+    "timezone":  "China Standard Time",
+    "computer":  "DESKTOP-QG05G44",
+    "user":  "li14",
+    "os":  "Microsoft Windows 11 家庭版 中文版",
+    "com_ports":  [
+                      {
+                          "device":  "COM4",
+                          "description":  "蓝牙链接上的标准串行",
+                          "pnp":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\7\u0026144B6EAE\u00260\u0026000000000000_00000000"
+                      },
+                      {
+                          "device":  "COM6",
+                          "description":  "蓝牙链接上的标准串行",
+                          "pnp":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\7\u0026144B6EAE\u00260\u0026000000000000_00000001"
+                      },
+                      {
+                          "device":  "COM10",
+                          "description":  "蓝牙链接上的标准串行",
+                          "pnp":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\7\u0026144B6EAE\u00260\u0026000000000000_00000002"
+                      },
+                      {
+                          "device":  "COM7",
+                          "description":  "蓝牙链接上的标准串行",
+                          "pnp":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID\u0026000102B0_PID\u00260000\\7\u0026144B6EAE\u00260\u0026407218D1E06B_C00000000"
+                      },
+                      {
+                          "device":  "COM11",
+                          "description":  "蓝牙链接上的标准串行",
+                          "pnp":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID\u0026000105D6_PID\u0026000A\\7\u0026144B6EAE\u00260\u00266C1629A026D3_C00000000"
+                      },
+                      {
+                          "device":  "COM5",
+                          "description":  "蓝牙链接上的标准串行",
+                          "pnp":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260002\\7\u0026144B6EAE\u00260\u0026C824788BD13E_C00000000"
+                      }
+                  ],
+    "pnp_ports":  [
+                      {
+                          "name":  "蓝牙链接上的标准串行 (COM11)",
+                          "status":  "OK",
+                          "instance":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID\u0026000105D6_PID\u0026000A\\7\u0026144B6EAE\u00260\u00266C1629A026D3_C00000000"
+                      },
+                      {
+                          "name":  "蓝牙链接上的标准串行 (COM5)",
+                          "status":  "OK",
+                          "instance":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260002\\7\u0026144B6EAE\u00260\u0026C824788BD13E_C00000000"
+                      },
+                      {
+                          "name":  "蓝牙链接上的标准串行 (COM7)",
+                          "status":  "OK",
+                          "instance":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_VID\u0026000102B0_PID\u00260000\\7\u0026144B6EAE\u00260\u0026407218D1E06B_C00000000"
+                      },
+                      {
+                          "name":  "蓝牙链接上的标准串行 (COM4)",
+                          "status":  "OK",
+                          "instance":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\7\u0026144B6EAE\u00260\u0026000000000000_00000000"
+                      },
+                      {
+                          "name":  "蓝牙链接上的标准串行 (COM6)",
+                          "status":  "OK",
+                          "instance":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\7\u0026144B6EAE\u00260\u0026000000000000_00000001"
+                      },
+                      {
+                          "name":  "蓝牙链接上的标准串行 (COM10)",
+                          "status":  "OK",
+                          "instance":  "BTHENUM\\{00001101-0000-1000-8000-00805F9B34FB}_LOCALMFG\u00260000\\7\u0026144B6EAE\u00260\u0026000000000000_00000002"
+                      }
+                  ],
+    "stlink":  [
+                   {
+                       "name":  "STM32 STLink",
+                       "status":  "OK",
+                       "instance":  "USB\\VID_0483\u0026PID_3748\\I"
+                   }
+               ],
+    "usb_devices":  [
+                        {
+                            "name":  "Intel(R) USB 3.10 可扩展主机控制器 - 1.20 (Microsoft)",
+                            "status":  "OK",
+                            "instance":  "PCI\\VEN_8086\u0026DEV_51ED\u0026SUBSYS_1513152D\u0026REV_01\\3\u002611583659\u00260\u0026A0"
+                        },
+                        {
+                            "name":  "通用 USB 集线器",
+                            "status":  "OK",
+                            "instance":  "USB\\VID_1A86\u0026PID_8095\\5\u00262C3531AC\u00260\u00262"
+                        },
+                        {
+                            "name":  "LIGHTSPEED Receiver",
+                            "status":  "OK",
+                            "instance":  "USB\\VID_046D\u0026PID_C547\\5\u00262C3531AC\u00260\u00261"
+                        },
+                        {
+                            "name":  "USB Composite Device",
+                            "status":  "OK",
+                            "instance":  "USB\\VID_0408\u0026PID_209D\\0X0001"
+                        },
+                        {
+                            "name":  "Intel(R) USB 3.20 可扩展主机控制器 - 1.20 (Microsoft)",
+                            "status":  "OK",
+                            "instance":  "PCI\\VEN_8086\u0026DEV_461E\u0026SUBSYS_00000000\u0026REV_02\\3\u002611583659\u00260\u002668"
+                        },
+                        {
+                            "name":  "USB 根集线器(USB 3.0)",
+                            "status":  "OK",
+                            "instance":  "USB\\ROOT_HUB30\\4\u0026231E636\u00260\u00260"
+                        },
+                        {
+                            "name":  "USB 根集线器(USB 3.0)",
+                            "status":  "OK",
+                            "instance":  "USB\\ROOT_HUB30\\4\u002611BF4672\u00260\u00260"
+                        },
+                        {
+                            "name":  "USB Composite Device",
+                            "status":  "OK",
+                            "instance":  "USB\\VID_41E4\u0026PID_2001\\6\u0026260F475B\u00260\u00262"
+                        }
+                    ],
+    "can_candidates":  [
+
+                       ],
+    "has_ch340_uart":  false
+}

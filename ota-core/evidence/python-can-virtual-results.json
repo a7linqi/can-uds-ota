@@ -1,0 +1,9 @@
+{
+  "tests": 7,
+  "failures": 0,
+  "python_can_version": "4.6.1",
+  "interface": "virtual",
+  "ecu": "actual C child process",
+  "usb_hardware_tested": false,
+  "hardware_verified": false
+}

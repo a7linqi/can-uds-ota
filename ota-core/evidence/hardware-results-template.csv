@@ -1,0 +1,1 @@
+timestamp_utc,case_id,mcu_marking,flash_kib,package_sha256,image_version,payload_bytes,can_bitrate,cut_stage,vdd_off_verified,reset_cause,final_state,active_version,pending_version,crc_ok,update_duration_s,bus_load_percent,passed,evidence_path,notes

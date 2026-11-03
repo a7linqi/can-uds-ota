@@ -1,0 +1,271 @@
+{
+  "mode": "C ECU with simulated reply loss",
+  "hardware_verified": false,
+  "application_instructions_executed": false,
+  "scenarios": [
+    {
+      "lost_positive_sid": "77",
+      "before": {
+        "active_version": 0,
+        "pending_version": 1,
+        "min_version": 0,
+        "active_size": 0,
+        "pending_size": 1503,
+        "active_crc32": 0,
+        "pending_crc32": 997703390,
+        "metadata_sequence": 2,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 2,
+        "boot_attempts": 0,
+        "state_name": "READY",
+        "metadata_only": true
+      },
+      "after": {
+        "active_version": 0,
+        "pending_version": 1,
+        "min_version": 0,
+        "active_size": 0,
+        "pending_size": 1503,
+        "active_crc32": 0,
+        "pending_crc32": 997703390,
+        "metadata_sequence": 5,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 4,
+        "boot_attempts": 1,
+        "state_name": "TRIAL",
+        "metadata_only": true
+      },
+      "result": {
+        "version": 1,
+        "payload_bytes": 1503,
+        "package_bytes": 1599,
+        "load_address": "0x8010000",
+        "payload_crc32": "3B77BEDE",
+        "package_sha256": "41ca42223d87bf2219c6ac06c3c29be2fdfc0d3899a105174fc7d3a44ddb9ccf",
+        "signature_verified": false,
+        "signed": true,
+        "operation": "install_staged",
+        "downloaded_bytes": 0,
+        "reset_requested": true,
+        "application_health_confirmed": false
+      },
+      "events": [
+        {
+          "event": "package_preflight",
+          "version": 1,
+          "payload_bytes": 1503,
+          "package_bytes": 1599,
+          "load_address": "0x8010000",
+          "payload_crc32": "3B77BEDE",
+          "package_sha256": "41ca42223d87bf2219c6ac06c3c29be2fdfc0d3899a105174fc7d3a44ddb9ccf",
+          "signature_verified": false,
+          "signed": true
+        },
+        {
+          "event": "request_started",
+          "sid": "22",
+          "bytes": 3
+        },
+        {
+          "event": "matching_ready_package",
+          "metadata_sequence": 2
+        },
+        {
+          "event": "request_started",
+          "sid": "10",
+          "bytes": 2
+        },
+        {
+          "event": "request_started",
+          "sid": "27",
+          "bytes": 2
+        },
+        {
+          "event": "request_started",
+          "sid": "27",
+          "bytes": 6
+        },
+        {
+          "event": "programming_unlocked",
+          "p2_s": 0.05,
+          "p2_star_s": 5.0,
+          "security": "demo_seed_key"
+        },
+        {
+          "event": "request_started",
+          "sid": "31",
+          "bytes": 4
+        },
+        {
+          "event": "request_started",
+          "sid": "11",
+          "bytes": 2
+        },
+        {
+          "event": "reset_requested"
+        },
+        {
+          "event": "request_started",
+          "sid": "22",
+          "bytes": 3
+        }
+      ]
+    },
+    {
+      "lost_positive_sid": "51",
+      "before": {
+        "active_version": 0,
+        "pending_version": 1,
+        "min_version": 0,
+        "active_size": 0,
+        "pending_size": 1503,
+        "active_crc32": 0,
+        "pending_crc32": 997703390,
+        "metadata_sequence": 5,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 4,
+        "boot_attempts": 1,
+        "state_name": "TRIAL",
+        "metadata_only": true
+      },
+      "after": {
+        "active_version": 0,
+        "pending_version": 1,
+        "min_version": 0,
+        "active_size": 0,
+        "pending_size": 1503,
+        "active_crc32": 0,
+        "pending_crc32": 997703390,
+        "metadata_sequence": 5,
+        "flash_bytes": 1048576,
+        "metadata_valid": true,
+        "state": 4,
+        "boot_attempts": 1,
+        "state_name": "TRIAL",
+        "metadata_only": true
+      },
+      "result": {
+        "reset_not_retried": true,
+        "application_health_confirmed": false
+      },
+      "events": [
+        {
+          "event": "package_preflight",
+          "version": 1,
+          "payload_bytes": 1503,
+          "package_bytes": 1599,
+          "load_address": "0x8010000",
+          "payload_crc32": "3B77BEDE",
+          "package_sha256": "41ca42223d87bf2219c6ac06c3c29be2fdfc0d3899a105174fc7d3a44ddb9ccf",
+          "signature_verified": false,
+          "signed": true
+        },
+        {
+          "event": "request_started",
+          "sid": "10",
+          "bytes": 2
+        },
+        {
+          "event": "request_started",
+          "sid": "27",
+          "bytes": 2
+        },
+        {
+          "event": "request_started",
+          "sid": "27",
+          "bytes": 6
+        },
+        {
+          "event": "programming_unlocked",
+          "p2_s": 0.05,
+          "p2_star_s": 5.0,
+          "security": "demo_seed_key"
+        },
+        {
+          "event": "request_started",
+          "sid": "34",
+          "bytes": 11
+        },
+        {
+          "event": "request_started",
+          "sid": "36",
+          "bytes": 512
+        },
+        {
+          "event": "block_accepted",
+          "counter": 1,
+          "offset": 0,
+          "bytes": 510
+        },
+        {
+          "event": "request_started",
+          "sid": "36",
+          "bytes": 512
+        },
+        {
+          "event": "block_accepted",
+          "counter": 2,
+          "offset": 510,
+          "bytes": 510
+        },
+        {
+          "event": "request_started",
+          "sid": "36",
+          "bytes": 512
+        },
+        {
+          "event": "block_accepted",
+          "counter": 3,
+          "offset": 1020,
+          "bytes": 510
+        },
+        {
+          "event": "request_started",
+          "sid": "36",
+          "bytes": 71
+        },
+        {
+          "event": "block_accepted",
+          "counter": 4,
+          "offset": 1530,
+          "bytes": 69
+        },
+        {
+          "event": "request_started",
+          "sid": "37",
+          "bytes": 1
+        },
+        {
+          "event": "request_started",
+          "sid": "31",
+          "bytes": 4
+        },
+        {
+          "event": "download_committed",
+          "blocks": 4
+        },
+        {
+          "event": "request_started",
+          "sid": "11",
+          "bytes": 2
+        },
+        {
+          "event": "reset_uncertain"
+        },
+        {
+          "event": "request_started",
+          "sid": "22",
+          "bytes": 3
+        },
+        {
+          "event": "request_started",
+          "sid": "22",
+          "bytes": 3
+        }
+      ]
+    }
+  ]
+}

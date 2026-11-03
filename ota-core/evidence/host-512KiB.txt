@@ -1,0 +1,24 @@
+COMMAND: C:\Users\li14\AppData\Local\Programs\Python\Python314\python.exe run_tests.py --cc D:\Project\Can\toolchain\tccbox-2025.10.27.data\purelib\tccbox\tcc_dist\tcc.exe --capacity 512 --in-memory
+Compile: D:\Project\Can\toolchain\tccbox-2025.10.27.data\purelib\tccbox\tcc_dist\tcc.exe -std=c99 -Wall -Wextra -Iinclude -Isrc/port/host -Ithird_party/ed25519 -DFLASH_TOTAL_SIZE=524288u src\core\boot.c src\core\crc32.c src\core\image.c src\core\isotp.c src\core\metadata.c src\core\signature.c src\core\uds.c src\core\watchdog_policy.c src\port\host\flash_ram.c tests\bench.c tests\test_boot.c tests\test_crc.c tests\test_isotp.c tests\test_protocol_edges.c tests\test_signature.c tests\test_uds.c tests\test_watchdog.c third_party\ed25519\fe.c third_party\ed25519\ge.c third_party\ed25519\keypair.c third_party\ed25519\sc.c third_party\ed25519\sha512.c third_party\ed25519\sign.c third_party\ed25519\verify.c -run tests/test_main.c
+ota-core host tests
+[crc]
+[isotp]
+[uds]
+[protocol edges]
+[watchdog policy]
+[signed image validation]
+[boot/UDS storage paths]
+[signed UDS commit/install/recovery paths]
+[signature: download/install/restore paths]
+[watchdog-driven reset model]
+[EEPROM transaction cuts]
+[application-confirmation transaction cuts]
+[download/commit reset sweep]
+  sampled 76 download mutation cut points
+[installation/reset sweep]
+  sampled 130 durable-mutation cut points (expected v2)
+[rollback/reset sweep]
+  sampled 76 durable-mutation cut points (expected v1)
+
+3138 checks, 0 failures
+420 storage power-cut scenarios (host model)

@@ -1,0 +1,44 @@
+{
+  "targets": [
+    {
+      "target": "explorer_ZG_loopback_READONLY",
+      "flash_bytes": 1048576,
+      "can_loopback": true,
+      "c_objects": 43,
+      "startup_assembled": false,
+      "linked": false
+    },
+    {
+      "target": "explorer_ZG_diagnostics_READONLY",
+      "flash_bytes": 1048576,
+      "can_loopback": false,
+      "c_objects": 43,
+      "startup_assembled": false,
+      "linked": false
+    },
+    {
+      "target": "explorer_ZE_loopback_READONLY",
+      "flash_bytes": 524288,
+      "can_loopback": true,
+      "c_objects": 43,
+      "startup_assembled": false,
+      "linked": false
+    },
+    {
+      "target": "explorer_ZE_diagnostics_READONLY",
+      "flash_bytes": 524288,
+      "can_loopback": false,
+      "c_objects": 43,
+      "startup_assembled": false,
+      "linked": false
+    }
+  ],
+  "forbidden_gates_rejected": [
+    "OTA_ENABLE_FLASHING",
+    "OTA_ENABLE_BOOT_HANDOFF",
+    "OTA_ENABLE_WATCHDOG"
+  ],
+  "physical_mode_loopback_entry_rejected": true,
+  "hardware_verified": false,
+  "target_linked": false
+}

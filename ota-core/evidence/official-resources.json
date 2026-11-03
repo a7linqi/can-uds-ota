@@ -1,0 +1,225 @@
+{
+  "checked_on": "2026-10-31",
+  "manufacturer": "ALIENTEK / 正点原子",
+  "official_index": "https://www.openedv.com/docs/index.html",
+  "v3_official_thread": {
+    "url": "https://www.openedv.com/thread-340198-1-1.html",
+    "posted_at": "2022-11-30 15:22:22",
+    "meaning": "V3 materials existed by this date; this does not identify the user board."
+  },
+  "seller_purchase_year": 2023,
+  "physical_board_revision": null,
+  "profiles": [
+    {
+      "revision": "V2",
+      "official_page": "https://www.openedv.com/docs/old-products/Old%20information/zdyz_stm32f407_explorer.html",
+      "official_share": "https://pan.baidu.com/s/18FAortpn_sdvZocav-JFpQ",
+      "public_extraction_code": "hhot",
+      "directory_read_successfully": true,
+      "located_entries": [
+        {
+          "filename": "4，程序源码",
+          "bytes": 0,
+          "is_directory": true
+        },
+        {
+          "filename": "STM32F4开发指南-HAL库版本_V1.2.pdf",
+          "bytes": 41170772,
+          "is_directory": false
+        },
+        {
+          "filename": "Explorer STM32F4_V2.2_SCH.pdf",
+          "bytes": 821450,
+          "is_directory": false
+        },
+        {
+          "filename": "探索者IO引脚分配表.xlsx",
+          "bytes": 22362,
+          "is_directory": false
+        }
+      ],
+      "document_bodies_retrieved": false,
+      "file_download_errno": -20,
+      "pinout_verified": false
+    },
+    {
+      "revision": "V3",
+      "official_page": "https://www.openedv.com/docs/boards/stm32/zdyz_stm32f407_explorerV3.html",
+      "official_share": "https://pan.baidu.com/s/1C5Yx-lwa_Dmn8UwgSz8YTw",
+      "public_extraction_code": "rqn5",
+      "directory_read_successfully": true,
+      "located_entries": [
+        {
+          "filename": "3，原理图.zip",
+          "bytes": 2633674,
+          "is_directory": false
+        },
+        {
+          "filename": "STM32F407 探索者开发指南V1.3.pdf",
+          "bytes": 61339597,
+          "is_directory": false
+        },
+        {
+          "filename": "探索者V3 硬件参考手册_V1.0.pdf",
+          "bytes": 4231289,
+          "is_directory": false
+        },
+        {
+          "filename": "2，标准例程-HAL库版本.zip",
+          "bytes": 217809305,
+          "is_directory": false
+        }
+      ],
+      "document_bodies_retrieved": false,
+      "file_download_errno": -20,
+      "pinout_verified": true
+    }
+  ],
+  "changes": "v0.12 adds original common-reference-pins BSP, read-only hardware probes, internal loopback/diagnostic entries and optional target builds.",
+  "hardware_verified": false,
+  "target_linked": true,
+  "board_data_needed": [
+    "PCB revision",
+    "MCU full marking",
+    "matching official schematic",
+    "NOR and EEPROM full markings"
+  ],
+  "source_page_sha256": {
+    "docs-index.html": "f783dc04815a0c7ebf208e1197b105115222c44257887dbe8260be4052d48278",
+    "explorer-v2.html": "b557ce3f352d41db10e51ac9687885610d8825fe39a00fc37d30fe56c602c8ce",
+    "explorer-v3.html": "3949687c01039359bc9fc545f778225b04a597781abe62938601548e82cdc9fd",
+    "v3-product-thread.html": "f111c9f4e64823e60805ba1fd829683fb0abd1200b535a4505cfd58a408231c3"
+  },
+  "user_suspected_revision": "V2 (not confirmed)",
+  "photo_observations": {
+    "board_marking_visible": "STM32F4",
+    "mcu_full_marking_visible": false,
+    "appearance": "More similar to the official V3 product image; not a PCB revision identification."
+  },
+  "read_reference_documents": [
+    {
+      "original_filename": "Explorer STM32F4_V2.2_SCH.pdf",
+      "url": "https://github.com/Meta-Team/Datasheets/blob/master/STM32F4/STM32F4%20%E6%8E%A2%E7%B4%A2%E8%80%85/Explorer%20STM32F4_V2.2_SCH.pdf",
+      "bytes": 821450,
+      "sha256": "54ed8980cab93810fd0c90ea5f7a6296975cea724b013b9eb017ed731526c1f1",
+      "read_pdf_pages_1_based": [
+        2,
+        3
+      ],
+      "official_listing_name_and_size_match": true,
+      "official_byte_identity_proven": false,
+      "physical_board_pinout_verified": false
+    },
+    {
+      "original_filename": "探索者V3 硬件参考手册_V1.0.pdf",
+      "url": "https://github.com/Limitlloss/STM32F407_Explore_Files/blob/main/%E6%8E%A2%E7%B4%A2%E8%80%85V3%20%E7%A1%AC%E4%BB%B6%E5%8F%82%E8%80%83%E6%89%8B%E5%86%8C_V1.0.pdf",
+      "bytes": 4231289,
+      "sha256": "eef986fcc67626f9adecdb27682946ad0c45d49b99bd0dffad86e1d3c3c6b037",
+      "read_pdf_pages_1_based": [
+        15,
+        16,
+        18,
+        19,
+        20,
+        21,
+        27,
+        28,
+        29,
+        31
+      ],
+      "official_listing_name_and_size_match": true,
+      "official_byte_identity_proven": false,
+      "physical_board_pinout_verified": false
+    },
+    {
+      "original_filename": "EXPLORER_V3.4.pdf",
+      "url": "https://github.com/Limitlloss/STM32F407_Explore_Files/blob/main/3%EF%BC%8C%E5%8E%9F%E7%90%86%E5%9B%BE/EXPLORER_V3.4.pdf",
+      "bytes": 3189618,
+      "sha256": "282206b31b7072204a5a105a289a41d5d4ca11a61664305ae6c48f56040be9d6",
+      "official_listing_name_and_size_match": true,
+      "official_byte_identity_proven": false,
+      "physical_board_pinout_verified": false,
+      "note": "V3 main schematic, internal revision V3.4."
+    },
+    {
+      "original_filename": "探索者V3 IO引脚分配表.xlsx",
+      "url": "https://github.com/Limitlloss/STM32F407_Explore_Files/blob/main/3%EF%BC%8C%E5%8E%9F%E7%90%86%E5%9B%BE/%E6%8E%A2%E7%B4%A2%E8%80%85V3%20IO%E5%BC%95%E8%84%9A%E5%88%86%E9%85%8D%E8%A1%A8.xlsx",
+      "bytes": 22058,
+      "sha256": "18c23495ae2269c67ce8d1659e2fe75c794760da12f56335c393489c06733e80",
+      "official_listing_name_and_size_match": true,
+      "official_byte_identity_proven": false,
+      "physical_board_pinout_verified": true,
+      "note": "V3 IO allocation table. Confirms MCU STM32F407ZGT6 and all reference BSP pins (CAN PA11/12 via P5, NOR SPI1 PB3/4/5 + PB14 CS, EEPROM I2C1 PB8/9, LED PF9/10, UART1 PA9/10, wireless PG6/7, KEY0 PE4)."
+    },
+    {
+      "original_filename": "ATK-MD0350 V2.4.pdf",
+      "url": "https://github.com/Limitlloss/STM32F407_Explore_Files/blob/main/3%EF%BC%8C%E5%8E%9F%E7%90%86%E5%9B%BE/ATK-MD0350%20V2.4.pdf",
+      "bytes": 346681,
+      "sha256": "b34edead24dc1dd55e570191ff88fe3240f234b093e4ba07c03bba30b85543c4",
+      "official_listing_name_and_size_match": true,
+      "official_byte_identity_proven": false,
+      "physical_board_pinout_verified": false,
+      "note": "3.5-inch 320x480 MCU-parallel LCD schematic, matches the purchased SKU."
+    }
+  ],
+  "v2_schematic_note": "The public V2.2 filename contains sheets whose internal revision is V2.0 and MCU label is ZET6; fitted capacity must be read from the actual board.",
+  "v3_storage_note": "Manufacturer manual allows NM25Q128/BY25Q128 substitutions; no W25Q write-driver compatibility is inferred.",
+  "pin_plan": {
+    "hse_hz": 8000000,
+    "led_active_low": [
+      "PF9",
+      "PF10"
+    ],
+    "uart1_tx_rx": [
+      "PA9",
+      "PA10"
+    ],
+    "can1_rx_tx": [
+      "PA11",
+      "PA12"
+    ],
+    "i2c1_scl_sda": [
+      "PB8",
+      "PB9"
+    ],
+    "eeprom_address_7bit": 80,
+    "spi1_sck_miso_mosi": [
+      "PB3",
+      "PB4",
+      "PB5"
+    ],
+    "nor_cs_active_low": "PB14",
+    "wireless_cs_high": "PG7",
+    "wireless_ce_low": "PG6",
+    "can_usb_selector_reference_designators": {
+      "V2": "P11",
+      "V3": "P5"
+    }
+  },
+  "v3_pinout_check": {
+    "checked_on": "2026-10-31",
+    "source": "探索者V3 IO引脚分配表.xlsx (official A-disc data via GitHub mirror Limitlloss/STM32F407_Explore_Files)",
+    "mcu_confirmed": "STM32F407ZGT6",
+    "all_reference_bsp_pins_match": true,
+    "matched_pins": {
+      "hse": "8 MHz",
+      "led0_led1": "PF9 / PF10 (DS0 red / DS1 green, active low)",
+      "uart1_tx_rx": "PA9 / PA10 (CH340 via P10)",
+      "can1_rx_tx": "PA11 / PA12 (CAN via P5, shared with USB D-/D+)",
+      "i2c1_scl_sda": "PB8 / PB9",
+      "eeprom_7bit": "0x50 (24C02)",
+      "spi1_sck_miso_mosi": "PB3 / PB4 / PB5",
+      "nor_cs": "PB14 (F_CS, 25Q128)",
+      "wireless_ce_cs": "PG6 (NRF_CE) / PG7 (NRF_CS)",
+      "key0": "PE4"
+    },
+    "new_findings": {
+      "i2c_bus_shared_with": ["24C02 (0x50)", "ST480MC touch controller", "ES8388 audio codec"],
+      "ethernet_phy": "YT8512C (RMII), not the V2 LAN8720",
+      "audio_codec": "ES8388 (I2S), not the V2 WM8978",
+      "nor_generic_label": "25Q128; actual brand still needs JEDEC RDID (NM25Q128/BY25Q128 allowed)"
+    }
+  },
+  "linked_target_scope": "Four GNU read-only Explorer reference targets",
+  "keil_target_linked": false
+}
