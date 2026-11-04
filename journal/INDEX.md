@@ -1,0 +1,26 @@
+# 索引
+
+一行一条，新的在最上面。**可写进简历 = Y** 的条目构成面试素材库。
+
+| 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
+|---|---|---|---|---|
+| 2026-11-04 | 缺陷 | [512 块演练在第 478 块停住（芯片内容仍等于金标，握手有竞态）](entries/2026-11-04-drill-stall-at-478.md) | nor-restore, swd-mailbox, race | Y |
+| 2026-11-04 | 功能 | [把五项自检收成一条命令（27 秒），并反证它真的会红](entries/2026-11-04-verify-all-aggregator.md) | verify_all, negative-control | Y |
+| 2026-11-04 | 缺陷 | [0x22 用 0x72 顶替"响应过长"（0x14），以及一条因错误原因而通过的测试](entries/2026-11-04-uds-nrc-response-too-long.md) | uds, nrc, iso14229-1, buffer | Y |
+| 2026-11-04 | 质量检查/防线 | [元数据存储的真实 EEPROM 页规则守卫（超严模型反证它会变红）](entries/2026-11-04-metadata-page-guard.md) | metadata, at24c02, page-write | Y |
+| 2026-11-04 | 环境/质量检查 | [静态分析一直在空跑（`-fsyntax-only` 静默关闭 `-fanalyzer`）](entries/2026-11-04-fanalyzer-silent-noop.md) | fanalyzer, false-clean, check.py | Y |
+| 2026-11-04 | 决策（推翻旧判断） | [那两个"沉默常量"不是缺陷，是编译期闸门](entries/2026-11-04-build-gate-not-silent-constants.md) | explorer_reference, #error, handoff | Y |
+| 2026-11-04 | 缺陷 | [ISO-TP 把保留 STmin 当致命错误（1 行修复 + 135 条边界断言）](entries/2026-11-04-isotp-reserved-stmin.md) | isotp, stmin, iso15765-2, uds | Y |
+| 2026-11-04 | 质量检查 | [代码巡检：静态分析 + 属性模糊 + 严格模型 + 补测 NOR 驱动](entries/2026-11-04-code-audit.md) | fanalyzer, fuzz, spi_nor | Y |
+| 2026-11-04 | 缺陷（推翻旧判断） | [串口零响应的对照实验：BOOT0 / VTOR 判据](entries/2026-11-04-boot0-vtor-experiment.md) | boot0, vtor, dtr-rts | Y |
+| 2026-11-04 | 实机验证 | [第一次在真实 NOR 上擦除+编程：3 块冒烟与"中断仍等于金标"](entries/2026-11-04-first-real-nor-write.md) | w25q128, swd, 幂等, crc32 | Y |
+| 2026-11-04 | 功能 | [上位机连接管理：连接/断开合一 + 后端切换门控](entries/2026-11-04-gui-connection-toggle.md) | tkinter, 状态机, serial | Y |
+| 2026-11-04 | 环境/缺陷 | [上位机接真机：三个只有硬件才暴露的坑](entries/2026-11-04-uart-bringup.md) | uart, pyserial, boot0, isotp | Y |
+| 2026-11-04 | 缺陷 | [UART 解码器半帧吃掉下一帧（19/300 → 300/300）](entries/2026-11-04-can-uart-resync.md) | can-uart, resync, crc16 | Y |
+| 2026-11-04 | 功能 | [NOR 恢复演练工具链：擦写 + 自校验 + 断电收敛](entries/2026-11-04-nor-restore-drill.md) | nor, swd-mailbox, crc32, 幂等 | Y |
+
+## 待补（先记着，有空补写）
+
+- RTC/时钟树实测（2026-11-03）
+- LCD NT35310 FSMC 驱动从零点亮（2026-11-03）
+- NOR 全片 dump 为什么是 3 小时（3.63 KB/s 的成因）

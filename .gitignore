@@ -66,6 +66,11 @@ __pycache__/
 .mypy_cache/
 *.egg-info/
 
+# ---------- WorkBuddy 本地数据（仅保留项目技能定义，其余为本机状态） ----------
+.workbuddy/*
+!.workbuddy/skills/
+!.workbuddy/skills/**
+
 # ---------- 编辑器 / 系统 ----------
 .vscode/
 .idea/
