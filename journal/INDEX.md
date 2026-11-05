@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 验证（实机/安全） | [RDP 才是信任锚：上锁之后，SWD 一个字节也读不出来](entries/2026-11-05-rdp-is-the-trust-anchor.md) | rdp, option-bytes, trust-anchor, swd, mass-erase | Y |
 | 2026-11-05 | 验证（实机） | [硬件看门狗第一次真的咬人：32.341 秒，然后把 sick 镜像回滚掉](entries/2026-11-05-hardware-watchdog-on-silicon.md) | iwdg, lsi 32.4 kHz, 32.341 s, trial rollback, sick 镜像 | Y |
 | 2026-11-05 | 缺陷（实机/红绿） | [EEPROM 偶发读失败：先造一个红探针，再谈修复有没有效](entries/2026-11-05-eeprom-stress-red-green.md) | i2c, eeprom, bus-clear, red probe, stress | Y |
 | 2026-11-05 | 验证（实机） | [安装中途断电：旧 App 擦到一半拔电，板子自己装完还带着正确凭证](entries/2026-11-05-power-cut-mid-install.md) | 安装窗口断电、自愈重装、凭证交叉验证、pyserial 死句柄、双轮取证 | Y |
