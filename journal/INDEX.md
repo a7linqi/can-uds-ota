@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 实机验证 | [第一次通过产品 UDS 路径真写 NOR，整片 CRC 与预测逐字节一致](entries/2026-11-05-first-real-uds-write.md) | uds, 0x34, 0x36, 0x37, spi-nor, crc32 | Y |
 | 2026-11-05 | 功能/工具 | [给恢复协议加「范围恢复」：一次写坏→修回从 87 分钟降到 77 秒](entries/2026-11-05-range-restore-for-write-experiments.md) | nor-restore, swd-mailbox, range-restore, evidence | Y |
 | 2026-11-05 | 功能/决策 | [把「能写」和「允许写」拆成双开关，上板 A/B 证明存储层只在双开时可达](entries/2026-11-05-two-switch-gate-t4.md) | uds, 0x34, storage_verified, s3, #error | Y |
 | 2026-11-05 | 功能 | [512 块恢复演练通过，产品 NOR 驱动首次读通真实硅片](entries/2026-11-05-drill-passed-and-driver-on-silicon.md) | nor-restore, crc32, spi_nor, w25q128, evidence | Y |

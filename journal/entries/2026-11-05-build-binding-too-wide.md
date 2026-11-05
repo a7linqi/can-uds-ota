@@ -82,3 +82,15 @@ python -c "import nor_restore as nr; nr.hardware_gate(0x200003b0)"
 - 这是**权宜之计**，不是设计修复：以后每改一次 `stages/board-lab/` 下的 `.py/.c/.h` 仍要重跑构建记录。
 - `core_hashes` 绑定的是 `D:\Project\Can\ota-core`（原版副本），而产品代码在 `D:\Project\Can-learning\ota-core`；两个副本当前一致，但这是一处潜在的镜像漂移风险。
 - 512 块全程演练正在运行，本条只覆盖上板前的闸门恢复。
+## 11. 后续（同日 10:45，设计修复已落地）
+
+上面第 10 节写的"权宜之计"当天就应验了第二次：新增主机脚本 `host/uds_write_probe.py` 之后，
+上板闸门再次报 `stage inputs changed: rebuild the restore image`，而板上跑的固件一个字节都没变。
+
+这次不再重跑构建记录，直接改 `build_restore.py:stage_hashes()`：只哈希 `firmware/` 下的
+`.c/.h/.ld` 加 `build_restore.py` 自身，产品源码仍由 `check_core_frozen()` 单独绑定。
+重建后 `bin_sha256` 仍是 `5b4b81d7…`（与之前逐字节相同），因此**没有重烧**板子，
+闸门随后放行。
+
+结论修正：第 10 节那条"以后每改一次 .py 都要重跑构建"不再成立。
+闸门现在回答的是"这个二进制是不是这份固件源码产出的"，而不是"目录里有没有文件动过"。

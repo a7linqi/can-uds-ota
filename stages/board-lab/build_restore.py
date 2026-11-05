@@ -43,10 +43,29 @@ def check_core_frozen():
 
 
 def stage_hashes():
+    """Hash only the files that actually end up inside the restore image.
+
+    This used to cover every .c/.h/.py/.ld/.ps1 in the stage, so dropping a new
+    host-side experiment script into host/ invalidated the binding and the gate
+    refused to touch the board ("stage inputs changed") even though the flashed
+    binary was byte-identical. That cost two rounds on 2026-11-05 (once for
+    check_environment.py, once for uds_write_probe.py). The gate has to answer
+    "did this binary come from this firmware source?", not "has anything in the
+    directory moved?". Product sources are covered separately by
+    check_core_frozen().
+    """
     excluded = {"build", "evidence", "__pycache__"}
-    return {p.relative_to(ROOT).as_posix(): digest(p) for p in sorted(ROOT.rglob("*"))
-            if p.is_file() and not excluded.intersection(p.relative_to(ROOT).parts)
-            and p.suffix in {".c", ".h", ".py", ".ld", ".ps1"}}
+    keep = {}
+    for p in sorted(ROOT.rglob("*")):
+        rel = p.relative_to(ROOT)
+        if not p.is_file() or excluded.intersection(rel.parts):
+            continue
+        if p.suffix not in {".c", ".h", ".ld", ".py", ".ps1"}:
+            continue
+        if rel.parts[0] != "firmware" and rel.as_posix() != "build_restore.py":
+            continue
+        keep[rel.as_posix()] = digest(p)
+    return keep
 
 
 def validate_image(elf, binary):
