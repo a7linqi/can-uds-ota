@@ -335,15 +335,27 @@ class SwdLink:
         # data". Header words are validated by the device anyway (session/seq/
         # offset/length/CRC), and a lost write ends in a timeout, not a false
         # pass. The 32 KiB payload write (-w) still verifies.
+        n_before = self._n
         try:
             self._run(["-c", "port=SWD", "index=0", "mode=HOTPLUG", "freq=1000",
                        "-nv", "-w32", hex(self.base + off), hex(value & 0xFFFFFFFF)])
-        except HostError:
-            # The word still lands; the CLI only fails its own follow-up step
-            # because the device reacts immediately. The caller confirms with a
-            # header read, so a genuinely lost write still fails closed.
-            if not tolerate:
-                raise
+        except HostError as exc:
+            # Measured on CubeProgrammer 2.23.0: -nv does NOT suppress the
+            # -w32 read-back. The firmware clears ack as soon as it consumes
+            # the doorbell, so the CLI read-back disagrees and it exits 1 with
+            # "Failed to download data!" -- even though the word landed.
+            # Tolerate ONLY that specific proven case: the log must show our
+            # exact address and value were issued AND the known read-back
+            # complaint. A broken link, a timeout or a refused connection is
+            # still fatal, otherwise a lost doorbell looks like a done block.
+            log = self.run_dir / f"cli-{self._tag}-{n_before + 1:05d}.log"
+            proof = (log.read_text(encoding="utf-8", errors="replace")
+                     if log.is_file() else "")
+            issued = (f"w @{hex(self.base + off)}:" in proof
+                      and hex(value & 0xFFFFFFFF) in proof)
+            readback_only = "Failed to download data" in proof
+            if not tolerate or not (issued and readback_only):
+                raise HostError(f"uncertain -w32 write at {off:#x}: {exc}")
         else:
             struct.pack_into("<I", self._hdr, off, value & 0xFFFFFFFF)
 
@@ -414,14 +426,40 @@ class Driver:
                                 f"device {self.link.u32(OFF_OFFSET):#x})")
             self.link.step()
 
-    def _confirm(self, accepted, where):
-        """A write of ack may report a CLI error even though the word landed.
-        Confirm from the device side; a lost write still fails here."""
-        self.link.refresh()
-        status = self.link.u32(OFF_STATUS)
-        if status not in accepted:
-            raise HostError(f"device did not take the command at {where} "
-                            f"(status {status:#x})")
+    def _confirm(self, accepted, where, timeout=10.0):
+        """Confirm from the device side that the command was taken.
+
+        Measured 2026-11-05 with a one-block hardware probe: the firmware
+        finishes a 32 KiB block in ~0.8 s, while one CubeProgrammer header
+        read can take 0.875 s late in a long run. A single read that straddles
+        the BUSY window comes back as BLOCK_OK with ack already cleared -- the
+        block is DONE, not rejected. The old one-shot check accepted only
+        BUSY/DONE and turned that into "device did not take the command" at
+        block 478 of 512 on 2026-11-04.
+
+        So accept anything in `accepted`, plus "already finished" (BLOCK_OK
+        with the doorbell consumed). Require two consecutive reads to agree
+        before judging, which also rejects a torn 40-byte header. A genuinely
+        lost doorbell still cannot pass the final full-chip CRC sweep.
+        """
+        deadline = time.monotonic() + timeout
+        previous = None
+        while True:
+            self.link.refresh()
+            status = self.link.u32(OFF_STATUS)
+            ack = self.link.u32(OFF_ACK)
+            if status == ST_ERROR:
+                if self.link.power_lost:
+                    raise PowerCut()
+                raise DeviceError(self.link.u32(OFF_ERROR), where)
+            if (status, ack) == previous:
+                if status in accepted or (status == ST_BLOCK_OK and ack == 0):
+                    return status
+            previous = (status, ack)
+            if time.monotonic() > deadline:
+                raise HostError(f"device did not take the command at {where} "
+                                f"(status {status:#x}, ack {ack:#x})")
+            time.sleep(0.02)
 
     def arm(self, session, mode):
         self._check_identity()
@@ -485,6 +523,17 @@ class Driver:
 
     def finish(self, started, seq):
         link = self.link
+        # A DONE header published while the SWD read was in flight can be a
+        # mixed snapshot (seen 2026-11-04: verify reported offset 0x0 twice
+        # and 0x1000000 once for the same DONE state). Re-read and require the
+        # two snapshots to agree before trusting any DONE field.
+        first = (link.u32(OFF_STATUS), link.u32(OFF_OFFSET),
+                 link.u32(OFF_LENGTH), link.u32(OFF_CRC32))
+        link.refresh()
+        second = (link.u32(OFF_STATUS), link.u32(OFF_OFFSET),
+                  link.u32(OFF_LENGTH), link.u32(OFF_CRC32))
+        if first != second:
+            raise HostError(f"torn DONE header: {first} != {second}")
         status = link.u32(OFF_STATUS)
         if status != ST_DONE:
             raise HostError(f"final status {status:#x} is not DONE")

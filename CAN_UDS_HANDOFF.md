@@ -258,6 +258,14 @@ python tools/package_project.py --include-firmware --output "工程目录外的�
 `hardware_verified=false`、`target_linked=true`、`keil_target_linked=false` 保持不变。
 （2026-11-04 22:53 那次为 73.3 秒 / 3164 断言 / 126 哈希，已过时。）
 
+**2026-11-05 上午补充（板子已连上）**：512 块演练停在 478 的根因已定死 ——
+设备完成一块约 0.8 s，晚期一次 SWD 读头 0.875 s，那次读横跨 BUSY 窗口回来已是 `BLOCK_OK`，
+而 `_confirm()` 只接受 `{BUSY, DONE}`。昨晚「0.877 s 是写→读间隔」是误读（实际间隔 11 ms，
+0.877 s 是读命令自身耗时）。主机驱动已改三处（双读确认 / 收窄容错 / DONE 防撕裂），
+固件与板上镜像零改动；模拟 512 块与真机 3 块验证通过，全程演练进行中。
+另发现硬件闸门把 `host/` 与 `tools/` 也算作固件输入，改主机脚本后需重跑 `build_restore.py`
+刷新绑定（产物逐字节不变，无需重烧）。详见 `journal/entries/2026-11-05-*.md`。
+
 四条结论会影响后面的计划：
 
 1. **reserved STmin（0x80–0xF0 / 0xFA–0xFF）原来会中止整个多帧传输**，ISO 15765-2 要求退化为 0x7F（127 ms）继续。

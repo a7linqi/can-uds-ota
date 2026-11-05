@@ -4,6 +4,8 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 缺陷/推翻旧判断 | [定死 512 块演练停在 478 的根因：设备比主机的一次读还快](entries/2026-11-05-drill-handshake-root-cause.md) | nor-restore, swd-mailbox, race, ack | Y |
+| 2026-11-05 | 环境 | [硬件闸门把主机工具脚本也算作固件输入](entries/2026-11-05-build-binding-too-wide.md) | hardware-gate, stage-hashes, build-record | N |
 | 2026-11-05 | 决策（推翻旧判断） | [推翻清单判断：`0x3E` TesterPresent 与 S3 超时早就实现了](entries/2026-11-05-tester-present-already-implemented.md) | uds, 0x3E, S3, task-list | N |
 | 2026-11-05 | 功能/决策 | [把三个已验证补丁合入产品仓库，回归从 3164 涨到 3328](entries/2026-11-05-three-packages-merged.md) | merge, red-green, isotp, uds, can-uart | Y |
 | 2026-11-05 | 决策（推翻旧判断） | [合并后包内 verify.py 判别力消失，以及四个打包期结论被推翻](entries/2026-11-05-package-verify-lost-discrimination.md) | verify.py, baseline, crlf, git-apply | Y |
