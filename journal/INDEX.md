@@ -4,6 +4,8 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 验证（实机） | [硬件看门狗第一次真的咬人：32.341 秒，然后把 sick 镜像回滚掉](entries/2026-11-05-hardware-watchdog-on-silicon.md) | iwdg, lsi 32.4 kHz, 32.341 s, trial rollback, sick 镜像 | Y |
+| 2026-11-05 | 缺陷（实机/红绿） | [EEPROM 偶发读失败：先造一个红探针，再谈修复有没有效](entries/2026-11-05-eeprom-stress-red-green.md) | i2c, eeprom, bus-clear, red probe, stress | Y |
 | 2026-11-05 | 验证（实机） | [安装中途断电：旧 App 擦到一半拔电，板子自己装完还带着正确凭证](entries/2026-11-05-power-cut-mid-install.md) | 安装窗口断电、自愈重装、凭证交叉验证、pyserial 死句柄、双轮取证 | Y |
 | 2026-11-05 | 验证（实机） | [断电中断升级：下载到 9690 字节时拔掉全部供电，板子照常恢复](entries/2026-11-05-power-cut-mid-download.md) | 断电中断、S3 保活、NRC≠断电、事务重启、逐字节读回 | Y |
 | 2026-11-05 | 验证（实机） | [回滚也要交得出证明](entries/2026-11-05-rollback-replays-the-ticket.md) | TRIAL 回滚 / 凭证重放 / 3E 存活探测 / SWD 电压 / 空闲态断电 16.5 s | Y |
