@@ -7,11 +7,19 @@ plug:
     10 02 (arm) -> 11 01 -> loader banner -> 10 02 -> 27 -> 22 02 00
     -> countdown -> 34 (erase, ~14 s) -> 36 frames (each one writes NOR)
 
-Everything from the first 0x34 byte until the last 0x36 frame is a valid cut
-point: external NOR is being erased or programmed, internal flash still holds
-the working v15 app. On recovery the state machine is DOWNLOADING with
-active_ok(), so boot_select() must hand off to the app -- the board keeps
-running the firmware it already had, which is the whole promise.
+Two cut points exist, selected with --cut-phase:
+
+  download (default) -- pull anywhere from the first 0x34 byte to the last
+    0x36 frame: external NOR is being erased or programmed, internal flash
+    still holds the working app. Recovery must hand off to that old app.
+
+  install -- pull INSIDE the ~8 s window that follows 11 01 after a complete
+    download + 0x37. 0x37 only commits state READY; the real install (NOR
+    backup, then erase of 960 KiB internal flash, program, ticket write)
+    happens in boot_select() after the reset. The window opens when the
+    banner prints "loader: selecting boot target" and closes ~8 s later.
+    The script watches the raw console for that line, then beeps. Recovery
+    must redo the install by itself and end up running the NEW image.
 
 After the port comes back:
   1. reopen (the open itself pulses NRST), read the banner raw -- no
@@ -21,8 +29,8 @@ After the port comes back:
   4. dump internal flash + the 96-byte ticket over SWD and compare byte for
      byte with the build product
 
-    python host/power_cut_upgrade.py --port COM9 --image <v17.img2> \
-        --out evidence/power-cut-interrupt --lead 60
+    python host/power_cut_upgrade.py --port COM9 --image <v18.img2> \
+        --out evidence/power-cut-install --lead 60 --cut-phase install
 """
 import argparse
 import hashlib
@@ -99,6 +107,10 @@ def main(argv=None):
     ap.add_argument("--out", required=True)
     ap.add_argument("--lead", type=float, default=60.0,
                     help="countdown seconds between unlock and the first 0x34")
+    ap.add_argument("--cut-phase", choices=("download", "install"),
+                    default="download",
+                    help="download: pull while NOR is being written; "
+                         "install: pull inside the post-11-01 install window")
     ap.add_argument("--reconnect-timeout", type=float, default=300.0)
     args = ap.parse_args(argv)
 
@@ -106,11 +118,12 @@ def main(argv=None):
     facts = check_package(package)
     if facts["problems"]:
         raise SystemExit("refusing to send a broken package: %s" % facts["problems"])
+    expect_version = facts["version"] if args.cut_phase == "install" else None
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     report = {
-        "label": "power cut during upgrade (erase or download phase)",
+        "label": "power cut during upgrade (phase: %s)" % args.cut_phase,
         "started_wall": wall(), "port": args.port,
         "package": {"path": str(Path(args.image).resolve()),
                     "bytes": len(package),
@@ -255,14 +268,89 @@ def main(argv=None):
         else:
             sent = 0
             report["frames_sent"] = 0
+
+        cut_phase_actual = args.cut_phase
+        if loss is None and args.cut_phase == "install":
+            # ---- phase 3b: complete the download, then open the install
+            # window with a reset. 0x37 only commits READY; the erase of the
+            # internal app slot happens after 11 01 inside boot_select(). ----
+            exit37 = ask("37", bytes([0x37]), tolerate=True)
+            if "response" not in exit37:
+                if "nrc" in exit37:
+                    raise SystemExit("37 refused -- package not accepted, no install "
+                                     "window, board untouched: %s" % json.dumps(exit37))
+                # A transport failure here IS a power cut that landed while the
+                # verify request was in flight -- not a refusal.
+                loss = exit37.get("error", "transport lost during 37")
+                report["cut_phase_actual"] = "verify-37"
+            else:
+                stamp("37 accepted -- package verified, state is READY")
+            if loss is None:
+                ask("11 01 (reset INTO the install window)", bytes([0x11, 0x01]),
+                    tolerate=True)
+
+                saved = transport.ser.timeout
+                transport.ser.timeout = 0.5
+                install_uart = b""
+                window_open = None
+                last_beep = None
+                deadline = time.monotonic() + 30.0
+                while time.monotonic() < deadline:
+                    try:
+                        chunk = transport.ser.read(4096)
+                    except Exception as error:
+                        loss = str(error)
+                        break
+                    if chunk:
+                        install_uart += chunk
+                        if window_open is None and b"selecting boot target" in install_uart:
+                            window_open = time.monotonic() - T0
+                            print("\n" + "*" * 62, flush=True)
+                            print("*** PULL ALL POWER NOW -- INSTALL WINDOW IS OPEN ***",
+                                  flush=True)
+                            print("*" * 62, flush=True)
+                    if window_open is not None:
+                        elapsed = int(time.monotonic() - T0 - window_open)
+                        if elapsed != last_beep:
+                            print("*** %d s into the install window -- PULL NOW ***"
+                                  % elapsed, flush=True)
+                            last_beep = elapsed
+                    time.sleep(0.1)
+                # The port handle is dead after a cut; restoring the timeout
+                # tries to reconfigure it and raises. That raise used to kill
+                # the script AFTER a successful cut -- the evidence was lost.
+                try:
+                    transport.ser.timeout = saved
+                except Exception:
+                    pass
+                (out / "install-window-uart.bin").write_bytes(install_uart)
+                report["install_window"] = {
+                    "opened_at": round(window_open, 2) if window_open is not None else None,
+                    "uart_bytes": len(install_uart),
+                    "selecting_seen": window_open is not None,
+                    "handoff_seen_before_cut": b"handing off to the app" in install_uart,
+                }
+                if loss is None:
+                    raise SystemExit("30 s with power on -- install completed and the "
+                                     "app booted; the window was missed, no cut")
+                cut_detected_at = time.monotonic() - T0
+                if report["install_window"]["handoff_seen_before_cut"]:
+                    cut_phase_actual = "after-install"
+                    stamp("PORT DIED after the handoff line -- cut landed late, "
+                          "the install itself had already finished")
+                else:
+                    stamp("PORT DIED inside the install window (%s)" % loss)
+                report["cut_phase_actual"] = cut_phase_actual
+
         if loss is None:
             stamp("download finished WITHOUT a power cut (%d frames) -- "
                   "no 0x37 sent; rerun with a bigger window or pull earlier"
                   % report["frames_sent"])
         else:
-            cut_detected_at = time.monotonic() - T0
-            stamp("PORT DIED mid-download after %d bytes -- power cut detected (%s)"
-                  % (sent, loss))
+            if cut_detected_at is None:
+                cut_detected_at = time.monotonic() - T0
+            stamp("PORT DIED after %d of %d bytes -- power cut detected (%s)"
+                  % (sent, len(package), loss))
     finally:
         try:
             transport.close()
@@ -326,7 +414,8 @@ def main(argv=None):
         pass
 
     # ---- phase 6: byte-level proof over SWD ----
-    payload_dump = swd_dump(APP_BASE, 44824, out / "internal-after.bin")
+    payload_size = facts["payload"]
+    payload_dump = swd_dump(APP_BASE, payload_size, out / "internal-after.bin")
     ticket_dump = swd_dump(TICKET_ADDR, TICKET_SIZE, out / "ticket-after.bin")
     app_bin = (CORE / "build-temp/stage-d/app/app.bin").read_bytes()
     verdict = {"payload_dump": payload_dump, "ticket_dump": ticket_dump}
@@ -340,6 +429,8 @@ def main(argv=None):
 
     report["recovery"] = {
         "cut_at": round(cut_detected_at, 2),
+        "cut_phase": args.cut_phase,
+        "cut_phase_actual": report.get("cut_phase_actual", args.cut_phase),
         "bytes_downloaded_before_cut": sent,
         "frames_sent_before_cut": report.get("frames_sent"),
         "status_before": status_before,
@@ -348,13 +439,23 @@ def main(argv=None):
         "banner_reset_has_handoff": b"handing off to the app" in banner2,
         "verdict": verdict,
     }
+    expect = expect_version or (status_before or {}).get("active_version")
     recovered = (status_after is not None
                  and status_after["role"] == "application"
-                 and status_after["active_version"] == 15
-                 and verdict.get("payload_identical_to_build") is True)
+                 and status_after["active_version"] == expect
+                 and verdict.get("payload_identical_to_build") is True
+                 and verdict.get("ticket_present") is True)
+    report["recovery"]["expected_active_version"] = expect
     report["recovery"]["RECOVERED"] = recovered
-    stamp("VERDICT: %s" % ("RECOVERED -- board runs v15 after an interrupted "
-                           "upgrade" if recovered else "NOT the expected state"))
+    if recovered:
+        if args.cut_phase == "install":
+            stamp("VERDICT: RECOVERED -- board redid the interrupted install "
+                  "by itself and now runs v%d" % expect)
+        else:
+            stamp("VERDICT: RECOVERED -- board runs v%d after an interrupted "
+                  "upgrade" % expect)
+    else:
+        stamp("VERDICT: NOT the expected state")
 
     (out / "power-cut.json").write_text(
         json.dumps(report, indent=2) + "\n", encoding="utf-8")
