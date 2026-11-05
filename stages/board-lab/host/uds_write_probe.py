@@ -101,6 +101,13 @@ def main(argv=None):
     else:
         payload = bytes([int(args.fill, 16)]) * args.size
     step = args.chunk or len(payload)
+    # The default step is "one frame with everything", which only works while
+    # the payload fits the frame limit. Check the effective step, not just the
+    # flag, so a large --size without --chunk fails here instead of looking
+    # like a firmware fault on the bus.
+    if step + 2 > MAX_BLOCK:
+        raise SystemExit("size %d needs --chunk: one frame would be %d bytes, limit %d"
+                         % (args.size, step + 2, MAX_BLOCK))
 
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
