@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 缺陷 | [UDS 说能收 512 字节，BSP 只肯收页内——阶段 C 之前先修跨页写](entries/2026-11-05-cross-page-write-found-by-block-c.md) | uds, 0x36, spi-nor, page-wrap, test-double | Y |
 | 2026-11-05 | 实机验证 | [第一次通过产品 UDS 路径真写 NOR，整片 CRC 与预测逐字节一致](entries/2026-11-05-first-real-uds-write.md) | uds, 0x34, 0x36, 0x37, spi-nor, crc32 | Y |
 | 2026-11-05 | 功能/工具 | [给恢复协议加「范围恢复」：一次写坏→修回从 87 分钟降到 77 秒](entries/2026-11-05-range-restore-for-write-experiments.md) | nor-restore, swd-mailbox, range-restore, evidence | Y |
 | 2026-11-05 | 功能/决策 | [把「能写」和「允许写」拆成双开关，上板 A/B 证明存储层只在双开时可达](entries/2026-11-05-two-switch-gate-t4.md) | uds, 0x34, storage_verified, s3, #error | Y |
