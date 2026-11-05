@@ -12,13 +12,22 @@ that the board fills on every poll:
 
     payload[40]  programming_allowed
     payload[41]  job_error
-    payload[42]  pending_in_flight (a 7F xx 78 is on the wire)
+    payload[42]  requests_dropped (frames discarded because one was in flight)
     payload[43]  bit7 = this image is the application, bits 0-6 = deadline misses
 
 This script reads them and, with --probe-gate, proves the verdict by sending a
 real gated request that is cheap and non-destructive:
 
-    31 01 00 01   check the download slot; erases nothing
+    10 02 -> 27 01 / 27 02 -> 36 01 00
+
+    36 01 00 answers NRC 0x24 (requestSequenceError) when the gate is open --
+    the request got past it and died at "no 0x34 first". NRC 0x22 is the closed
+    gate. The one data byte is never written: without an active download there
+    is nowhere to put it.
+
+    Do not use 31 01 00 01 as a gate probe. Measured on the board 2026-11-05:
+    it answers 0x22 whenever there is no pending package, so it reports the
+    same NRC as a closed gate while the gate is in fact open.
 
     python host/uds_gate_probe.py --port COM9 --out evidence/<dir>
     python host/uds_gate_probe.py --port COM9 --out evidence/<dir> --probe-gate
@@ -37,6 +46,10 @@ sys.path.insert(0, str(CORE / "tools"))
 from pc.transport import SerialCanTransport  # noqa: E402
 from pc.isotp_client import IsoTpClient  # noqa: E402
 from pc.uds_client import UdsClient, NegativeResponse  # noqa: E402
+# One definition of the demo key schedule, shared with the stage-D driver. A
+# hand-rolled XOR here answered NRC 0x35 on the board and made the whole probe
+# look like a gate failure.
+from uds_stage_d import calc_key  # noqa: E402
 
 STATUS_BYTES = 44
 STATES = ["IDLE", "DOWNLOADING", "READY", "INSTALLING", "TRIAL", "RESTORING"]
@@ -70,7 +83,7 @@ def decode_status(payload):
         "diag": {
             "programming_allowed": diag[0],
             "job_error": diag[1],
-            "pending_in_flight": diag[2],
+            "requests_dropped": diag[2],
             "role": "application" if diag[3] & 0x80 else "loader",
             "service_deadline_misses": diag[3] & 0x7F,
         },
@@ -104,6 +117,7 @@ def main(argv=None):
                 record["bytes"] = answer
             except NegativeResponse as error:
                 record["nrc"] = str(error)
+                record["nrc_code"] = int(error.nrc)
             except Exception as error:
                 record["error"] = str(error)
             record["seconds"] = round(time.monotonic() - started, 3)
@@ -120,11 +134,34 @@ def main(argv=None):
             print(json.dumps(result["telemetry"], indent=2))
 
         if args.probe_gate:
-            probe = ask("31 01 00 01", bytes([0x31, 0x01, 0x00, 0x01]))
-            accepted = str(probe.get("response", "")).startswith("71 01 00 01")
-            refused = probe.get("nrc") is not None and "0x22" in str(probe.get("nrc"))
-            result["gate_probe"] = {"accepted": accepted, "refused_0x22": refused,
+            # A bare 31 in the default session answers NRC 0x7F, which would
+            # look like a refusal for the wrong reason. Reach the state a real
+            # tester reaches first, then read the wire at the gate itself.
+            ask("10 02", bytes([0x10, 0x02]))
+            seed_record = ask("27 01", bytes([0x27, 0x01]))
+            seed_hex = str(seed_record.get("response", "")).split()
+            unlocked = False
+            if len(seed_hex) >= 6:
+                seed = int("".join(seed_hex[2:6]), 16)
+                key = calc_key(seed)
+                key_record = ask("27 02 %08X" % key,
+                                 bytes([0x27, 0x02]) + key.to_bytes(4, "big"))
+                unlocked = str(key_record.get("response", "")).startswith("67 02")
+            probe = ask("36 01 00", bytes([0x36, 0x01, 0x00]))
+            # NRC 0x24 (requestSequenceError) is the open gate: the request got
+            # past the gate and died at "no 0x34 first". NRC 0x22 is the closed
+            # gate. 0x36 with one byte of data writes nothing.
+            accepted = probe.get("nrc_code") == 0x24
+            refused = probe.get("nrc_code") == 0x22
+            result["gate_probe"] = {"reached_sequence_check": accepted,
+                                    "refused_0x22": refused,
+                                    "unlocked": unlocked, "used_36": True,
                                     "wire": probe.get("response") or probe.get("nrc")}
+            # Re-read the telemetry: 10 02 re-evaluates the gate on the board.
+            again = ask("22 02 00", bytes([0x22, 0x02, 0x00]))
+            again_raw = again.get("bytes")
+            if again_raw is not None and again_raw[:3] == b"\x62\x02\x00":
+                result["telemetry_after"] = decode_status(bytes(again_raw[3:]))
     finally:
         transport.close()
 
@@ -138,8 +175,17 @@ def main(argv=None):
             verdict["consistent"] = None
         else:
             # The telemetry claims a capability; the wire has to back it up.
-            verdict["consistent"] = (result["gate_probe"]["accepted"]
-                                     == bool(diag["programming_allowed"]))
+            # Compare against the gate as it stood when 31 was answered, not as
+            # it stood before 10 02 re-evaluated it.
+            after = (result.get("telemetry_after") or {}).get("diag") or diag
+            verdict["gate_after_session"] = bool(after["programming_allowed"])
+            verdict["consistent"] = (result["gate_probe"]["reached_sequence_check"]
+                                     == bool(after["programming_allowed"]))
+        if diag["role"] == "application" and not diag["programming_allowed"]:
+            verdict["note"] = ("application refuses write services by build; "
+                               "the loader does the writing")
+        elif diag["role"] == "loader" and not diag["programming_allowed"]:
+            verdict["note"] = "loader gate is closed: storage or a failed job"
         if diag["role"] == "application" and not diag["programming_allowed"]:
             verdict["note"] = ("application refuses write services by build; "
                                "the loader does the writing")

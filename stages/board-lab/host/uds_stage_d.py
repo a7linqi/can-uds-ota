@@ -85,6 +85,9 @@ def main(argv=None):
     ap.add_argument("--listen", type=float, default=70.0,
                     help="seconds to record the serial line after 0x11")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--handoff", action="store_true",
+                    help="start in the application and ask it for the loader "
+                         "inside this same port session")
     args = ap.parse_args(argv)
 
     package = Path(args.image).read_bytes()
@@ -124,6 +127,32 @@ def main(argv=None):
             if failed and not tolerate:
                 raise SystemExit("transport failed at %s" % text)
             return record
+
+        if args.handoff:
+            # Only the application can arm the handoff, and the board normally
+            # boots into it. Do it here, inside the same port session: closing
+            # the port pulses NRST (the CH340's DTR is wired to it), so a second
+            # process would reset the board straight back into the application.
+            # Measured 2026-11-05 -- close the port with the flag armed and the
+            # metadata sequence rises by two (write + consume) while nobody is
+            # listening: the loader took the stop and stayed.
+            ask("10 02 (arm handoff)", bytes([0x10, 0x02]))
+            ask("11 01 (reset into loader)", bytes([0x11, 0x01]), tolerate=True)
+            # Save the transport's read timeout: it is 0.01 s and every later
+            # 0x36 pays it on each poll. Leaving 0.2 s here made the download
+            # 7x slower (0.43-2.47 s per frame instead of 0.05-0.34 s).
+            saved = transport.ser.timeout
+            transport.ser.timeout = 0.2
+            deadline = time.monotonic() + 6.0
+            banner = b""
+            while time.monotonic() < deadline:
+                banner += transport.ser.read(4096)
+            transport.ser.timeout = saved
+            sys.stdout.reconfigure(errors="replace")
+            print("--- loader after handoff (%d bytes) ---" % len(banner))
+            print(banner.decode("ascii", "replace"), flush=True)
+            if b"stop requested" not in banner:
+                raise SystemExit("handoff did not reach the loader")
 
         ask("10 02", bytes([0x10, 0x02]))
         seed_record = ask("27 01", bytes([0x27, 0x01]))

@@ -4,6 +4,9 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 功能（实机闭环） | [从运行中的应用连续升级三次，并读回内部 Flash 逐字节比对](entries/2026-11-05-three-consecutive-upgrades-on-silicon.md) | uds, ota, handoff, ed25519, readback | Y |
+| 2026-11-05 | 缺陷（观测手段有错） | [换掉一个永远说 1 的遥测字节，并承认 `31 01 00 01` 不是门控探针](entries/2026-11-05-telemetry-byte-that-always-lied.md) | uds, status-did, 0x0200, nrc-0x22, telemetry | Y |
+| 2026-11-05 | 缺陷（环境陷阱） | [找到「跨脚本状态不持久」的真凶：关串口会复位板子](entries/2026-11-05-port-close-resets-the-board.md) | ch340, dtr, nrst, handoff, serial | Y |
 | 2026-11-05 | 缺陷（推翻旧判断） | [撤回「门控卡死」的判断：NRC 0x22 有两个原因，而我把它们当成了一个](entries/2026-11-05-gate-is-not-a-fuse.md) | uds, nrc-0x22, ota_enable_flashing, status-did, stm32_diag | Y |
 | 2026-11-05 | 功能 | [给运行中的 App 一条进入编程会话的路：`boot_request` 一次写入、一次消费](entries/2026-11-05-app-to-loader-handoff.md) | uds, boot, metadata, handoff, stm32 | Y |
 | 2026-11-05 | 缺陷 | [修好「App 坏了就再也装不进新包」：READY 分支不该被 active 校验拦住](entries/2026-11-05-broken-active-blocked-ready.md) | boot, metadata, sane, image_validate_app, ota | Y |

@@ -78,12 +78,52 @@
 当前固件（本轮重建）：loader 47308 B（sha256 `73c1a08e…`）、app 44280 B（sha256 `b704f99d…`）、
 签名包 v7 44376 B（payload 44280 B）。
 
-**本轮没做的**：板子未连接（只有蓝牙串口、无 ST-Link），所以 44 字节记录、`diag[3]` 的
-`role` 位在实物上尚未读数。待插板后执行：
+~~**本轮没做的**：板子未连接（只有蓝牙串口、无 ST-Link），所以 44 字节记录、`diag[3]` 的
+`role` 位在实物上尚未读数。~~
 
-```
-python host/uds_gate_probe.py --port COM9 --out evidence/<dir> --probe-gate
-```
+**更正（2026-11-05 深夜，已上板）**：板子一直连着，是枚举时只筛了 `Class -eq USB`，
+而 `STM32 STLink` 挂在 `USBDevice` 类下。实物读数已完成，见下一节。同一节里还有两处结论被推翻：
 
-它先读 `22 02 00` 打印全部字段（含 4 个遥测字节），再用一条不擦除的 `31 01 00 01`
-验证"遥测说能写"和"线上真的放行"是否一致。
+1. 第 4 个遥测字节里的 `pending_in_flight` 在实物上**恒为 1**（读它的请求本身就是延迟服务），
+   已换成 `requests_dropped`。
+2. `31 01 00 01` **不是**门控探针：它校验的是"有待装包"，没包时对任何门控状态都回 `0x22`。
+   可用的非破坏性探针是 `36 01 00`（门控开 → `0x24`，门控关 → `0x22`）。
+
+## 实机复验（2026-11-05 深夜，板子在线）
+
+实物：ST-Link（`USBDevice / STM32 STLink`，FW V2J47S7）+ CH340 在 **COM9**；
+`STM32_Programmer_CLI -c port=SWD mode=UR` 读到 `Device ID 0x413`、`NVM 1 MBytes`、`Rev 2.0`、3.24 V。
+
+固件（本轮重建并烧录）：loader 47324 B（sha256 `d61020cf…`）、app 44288 B（sha256 `bed181e9…`）。
+
+| 项 | 命令 | 结果 |
+|---|---|---|
+| 元数据过时不再乱跳 | 烧新 app 后复位 | `loader: selecting boot target` → `loader: staying in the loader`，状态仍 IDLE，未清记录 |
+| 状态 DID 44 字节 | `uds_gate_probe.py` | `role=loader`、`programming_allowed=1`、`requests_dropped=0` |
+| 门控遥测与总线一致 | `--probe-gate` | `36 01 00` → NRC `0x24`（门控开），`verdict.consistent=true` |
+| App 侧对照 | 同上 | `role=application`、`allowed=0`、`36 01 00` → NRC `0x22` |
+| App→loader | `uds_app_handoff.py` | `loader: stop requested by the application`，不跳转 |
+| 首次安装（v8） | `uds_stage_d.py` | `37→77`、`31→71 01 00 01 00`、`handing off to the app` |
+| 连续升级（v9/v10/v11） | `uds_stage_d.py --handoff` | 三次全部成功，`active_version` 9/10/11 |
+| 读回比对（v10） | ST-Link `-u 0x08010000 0xAD00` | `sha256 bed181e9ea2b4089`、`crc32 0x5F966357`、44288 B，与构建产物**逐字节相同** |
+
+### 这轮新发现的硬件事实：关串口会复位板子
+
+CH340 的 DTR/RTS 接了 NRST。实测：读状态得 seq 59 / `role=application` → 发 `10 02` → **直接关端口**
+（不发 `11 01`）→ 等 3 s → 再读：seq **61**（+2 = 写入 + 消费）、`role=loader`。
+没有任何复位指令，却多出一次 loader 的消费写入，所以复位发生在关端口那一刻。
+
+后果与对策：跨进程"先留状态、再跑下一个脚本"不成立。`uds_stage_d.py` 新增 `--handoff`，
+在同一串口会话内完成 `10 02 → 11 01 → 抓横幅 → 10 02 → 27 → 34/36/37/31`。
+
+### 时序（实测，同一 loader 二进制）
+
+| 步骤 | v8（会话起点=loader） | v9/v10（`--handoff`，超时 bug） | v11（超时修复后） |
+|---|---|---|---|
+| `34` 擦除 | 13.82 s | 14.26 / 14.24 s | 13.90 s |
+| `36` 每帧 | 0.05–0.34 s | 0.43–2.47 s | 0.06–0.34 s |
+| `37` 验签 | 0.34 s | 0.53 s | 0.53 s |
+| `31` 安装 | 0.29 s | 0.48 s | 0.48 s |
+
+v9/v10 的 7 倍慢是 `--handoff` 里把 `ser.timeout` 临时改成 0.2 s 后忘了恢复（传输层默认 0.01 s），
+不是固件问题；修复后回到 0.06–0.34 s。
