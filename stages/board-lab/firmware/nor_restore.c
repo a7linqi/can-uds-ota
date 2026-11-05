@@ -54,11 +54,29 @@ void nr_init(nr_ctx_t *c, volatile nr_mailbox_t *mb, const nr_io_t *io, uint32_t
 static int begin(nr_ctx_t *c)
 {
     volatile nr_mailbox_t *mb = c->mb;
+    uint32_t start = 0u;
+    uint32_t end = c->total;
 
     if (c->total == 0u || c->total > NR_TOTAL_SIZE ||
         (c->total % NR_SECTOR_SIZE) != 0u) {
         publish_error(c, NR_ERR_INIT);
         return -1;
+    }
+    if (mb->h.ack == NR_CMD_RESTORE) c->mode = 1u;
+    else if (mb->h.ack == NR_CMD_VERIFY) c->mode = 2u;
+    else c->mode = 3u;
+    if (c->mode == 3u) {
+        /* Range restore reads its bounds from the same header the block
+         * submits use. Validate them BEFORE the chip is touched, and before
+         * the request fields are cleared below. */
+        start = mb->h.offset;
+        if (start >= c->total || (start % NR_SECTOR_SIZE) != 0u ||
+            mb->h.length == 0u || (mb->h.length % NR_SECTOR_SIZE) != 0u ||
+            mb->h.length > c->total - start) {
+            publish_error(c, NR_ERR_BAD_REQUEST);
+            return -1;
+        }
+        end = start + mb->h.length;
     }
     c->session = mb->h.session;
     mb->h.session = c->session;
@@ -68,13 +86,14 @@ static int begin(nr_ctx_t *c)
     mb->h.crc32 = 0u;
     mb->h.error = NR_ERR_NONE;
     c->seq = 0u;
-    c->offset = 0u;
+    c->start = start;
+    c->end = end;
+    c->offset = start;
     c->blk_len = 0u;
-    c->cursor = 0u;
+    c->cursor = start;
     c->crc = 0u;
     c->blocks_done = 0u;
     c->bytes_done = 0u;
-    c->mode = (uint8_t)(mb->h.ack == NR_CMD_RESTORE ? 1u : 2u);
     mb->h.ack = 0u;   /* consume the command so READY never looks like a restart */
     publish_status(c, NR_ST_BUSY);
     if (c->mode == 2u) {
@@ -94,7 +113,8 @@ int nr_service(nr_ctx_t *c)
     switch (c->state) {
     case NR_S_WAIT:
         if (mb->h.session == 0u) return 0;
-        if (mb->h.ack != NR_CMD_RESTORE && mb->h.ack != NR_CMD_VERIFY) return 0;
+        if (mb->h.ack != NR_CMD_RESTORE && mb->h.ack != NR_CMD_VERIFY &&
+            mb->h.ack != NR_CMD_RESTORE_RANGE) return 0;
         if (begin(c) < 0) return -1;
         return 0;
 
@@ -109,7 +129,7 @@ int nr_service(nr_ctx_t *c)
         if (mb->h.length == 0u || mb->h.length > NR_BLOCK_SIZE) {
             publish_error(c, NR_ERR_BAD_REQUEST); return -1;
         }
-        if (mb->h.offset + mb->h.length > c->total) { publish_error(c, NR_ERR_BAD_REQUEST); return -1; }
+        if (mb->h.offset + mb->h.length > c->end) { publish_error(c, NR_ERR_BAD_REQUEST); return -1; }
         if (crc32_calc((const uint8_t *)mb->data, mb->h.length) != mb->h.crc32) {
             publish_error(c, NR_ERR_BLOCK_CRC); return -1;
         }
@@ -167,8 +187,8 @@ int nr_service(nr_ctx_t *c)
         c->offset += c->blk_len;
         c->blocks_done += 1u;
         c->bytes_done += c->blk_len;
-        if (c->offset >= c->total) {
-            c->cursor = 0u;
+        if (c->offset >= c->end) {
+            c->cursor = c->start;
             c->crc = 0u;
             c->state = NR_S_FINAL_CRC;
             publish_status(c, NR_ST_BUSY);
@@ -180,9 +200,9 @@ int nr_service(nr_ctx_t *c)
 
     case NR_S_FINAL_CRC:
         /* status stays BUSY for the whole sweep: a DONE here would be a lie. */
-        if (c->cursor >= c->total) {
+        if (c->cursor >= c->end) {
             mb->h.seq = c->seq;
-            mb->h.offset = c->total;
+            mb->h.offset = c->end;
             mb->h.length = 0u;
             mb->h.crc32 = c->crc;
             mb->h.ack = 0u;
@@ -190,7 +210,7 @@ int nr_service(nr_ctx_t *c)
             c->state = NR_S_DONE_ST;
             return 1;
         }
-        n = c->total - c->cursor;
+        n = c->end - c->cursor;
         if (n > NR_PAGE_SIZE) n = NR_PAGE_SIZE;
         if (c->io.read(c->io.ctx, c->cursor, c->scratch, n)) {
             publish_error(c, NR_ERR_VERIFY); return -1;

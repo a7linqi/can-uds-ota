@@ -49,6 +49,7 @@ OFF_SESSION, OFF_SEQ, OFF_OFFSET, OFF_LENGTH = 8, 12, 16, 20
 OFF_STATUS, OFF_ERROR, OFF_CRC32, OFF_ACK, OFF_DATA = 24, 28, 32, 36, 40
 CMD_RESTORE = 0xA1000000
 CMD_VERIFY = 0xA2000000
+CMD_RESTORE_RANGE = 0xA3000000
 ST_IDLE, ST_BUSY, ST_READY, ST_BLOCK_OK, ST_DONE, ST_ERROR = 0, 1, 2, 3, 4, 0xE0
 ERR_NAME = {
     0: "NONE", 1: "INIT", 2: "JEDEC", 3: "SPI", 4: "BAD_REQUEST",
@@ -463,9 +464,16 @@ class Driver:
                                 f"(status {status:#x}, ack {ack:#x})")
             time.sleep(0.02)
 
-    def arm(self, session, mode):
+    def arm(self, session, mode, start=None, length=None):
         self._check_identity()
         self.link.set_u32(OFF_SESSION, session)
+        if mode == CMD_RESTORE_RANGE:
+            # The device only looks at these once the command word lands, so
+            # the order here is what makes the arm atomic from its side.
+            if start is None or length is None:
+                raise HostError("range arm needs start and length")
+            self.link.set_u32(OFF_OFFSET, start)
+            self.link.set_u32(OFF_LENGTH, length)
         self.link.set_u32(OFF_ACK, mode, tolerate=True)
         self._confirm({ST_BUSY, ST_READY, ST_DONE}, "session start")
         if mode == CMD_VERIFY:
@@ -523,7 +531,43 @@ class Driver:
         self.arm(session, CMD_VERIFY)
         return self.finish(started, 0)
 
-    def finish(self, started, seq):
+    def restore_range(self, data, start, progress=None):
+        """Rewrite only [start, start+len(data)); everything else is untouched.
+
+        Same block protocol as a full restore, so the per-block echo, the
+        read-back verify and the device-side CRC sweep all still apply -- the
+        only difference is where the session starts and stops.
+        """
+        if not data:
+            raise HostError("empty range")
+        if start % SECTOR or len(data) % SECTOR:
+            raise HostError("range start and length must be 4096-byte multiples")
+        if start + len(data) > self.total:
+            raise HostError("range runs past the end of the chip")
+        end = start + len(data)
+        session = new_session()
+        started = time.monotonic()
+        self.arm(session, CMD_RESTORE_RANGE, start=start, length=len(data))
+        offset = start
+        seq = 0
+        while offset < end:
+            n = min(self.block_size, end - offset)
+            block = data[offset - start:offset - start + n]
+            seq += 1
+            t0 = time.monotonic()
+            status = self.submit(seq, offset, block)
+            self._event({"seq": seq, "offset": offset, "length": n,
+                         "crc32": f"{crc32(block):08x}",
+                         "duration_s": round(time.monotonic() - t0, 4),
+                         "status": "done" if status == ST_DONE else "ok"})
+            if progress:
+                progress(seq, offset + n - start, len(data))
+            if status == ST_DONE:
+                break
+            offset += n
+        return self.finish(started, seq, end=end)
+
+    def finish(self, started, seq, end=None):
         link = self.link
         # A DONE header published while the SWD read was in flight can be a
         # mixed snapshot (seen 2026-11-04: verify reported offset 0x0 twice
@@ -542,8 +586,9 @@ class Driver:
         if link.u32(OFF_ERROR) != 0:
             raise HostError("DONE carries a non-zero error code")
         offset = link.u32(OFF_OFFSET)
-        if offset != self.total:
-            raise HostError(f"DONE offset {offset:#x} != total {self.total:#x}")
+        want_end = self.total if end is None else end
+        if offset != want_end:
+            raise HostError(f"DONE offset {offset:#x} != expected end {want_end:#x}")
         if link.u32(OFF_LENGTH) != 0:
             raise HostError("DONE should carry length 0")
         return {"status": "passed", "device_crc32": link.u32(OFF_CRC32),
@@ -676,6 +721,51 @@ def run_sim(image, total, cut=None, timeout=120.0, out_dir=None, mode="restore")
         link.close()
 
 
+def run_sim_range(image, start, length, cut=None, timeout=120.0, out_dir=None):
+    """Range restore against the model.
+
+    The chip is seeded with the golden image but with the target range wiped,
+    so a pass proves two things at once: the range now matches, and every byte
+    outside it was left alone (a range restore that quietly rewrote a
+    neighbour would show up as a full-chip mismatch).
+    """
+    end = start + length
+    seed = bytearray(image)
+    seed[start:end] = b"\x00" * length
+    seed = bytes(seed)
+    link, chip, block_size = open_sim(len(image), cut, seed=seed)
+    events = (Path(out_dir) / "events.jsonl") if out_dir else None
+    driver = Driver(link, len(image), timeout, events)
+    result = {"attempts": [], "range": {"start": start, "length": length,
+                                        "crc32": f"{crc32(image[start:end]):08x}"}}
+    try:
+        attempt = 0
+        while True:
+            attempt += 1
+            try:
+                info = driver.restore_range(image[start:end], start)
+                result["attempts"].append({"attempt": attempt, **info, "cut": False})
+                break
+            except PowerCut:
+                result["attempts"].append({"attempt": attempt, "cut": True})
+                link.close()
+                link, chip, block_size = open_sim(len(image), None, seed=seed)
+                driver = Driver(link, len(image), timeout, events)
+        result.update(info)
+        result["attempts_count"] = attempt
+        result["range_crc32"] = crc32(image[start:end])
+        result["chip_crc32"] = chip.chip_crc32()
+        result["image_crc32"] = crc32(image)
+        result["chip_matches_image"] = bytes(chip.mem) == image
+        result["program_without_erase"] = chip.violations
+        result["sectors_erased"] = chip.erases
+        result["pages_programmed"] = chip.programs
+        result["block_size"] = block_size
+        return result
+    finally:
+        link.close()
+
+
 def run_hardware(image, total, mailbox, cli, out_dir, timeout, mode):
     record = hardware_gate(mailbox)
     block_size = record["mailbox"]["block_bytes"]
@@ -702,6 +792,40 @@ def run_hardware(image, total, mailbox, cli, out_dir, timeout, mode):
     return driver.restore(image, progress=progress)
 
 
+def run_hardware_range(image, start, length, mailbox, cli, out_dir, timeout, verify_full):
+    record = hardware_gate(mailbox)
+    block_size = record["mailbox"]["block_bytes"]
+    link = SwdLink(cli, mailbox, block_size, out_dir)
+    total = len(image)
+    driver = Driver(link, total, timeout, Path(out_dir) / "events.jsonl")
+    link.reset_and_arm()
+    end = start + length
+    print("range restore: [%#x, %#x), %d bytes, %d block(s) of %d B"
+          % (start, end, length, -(-length // block_size), block_size), flush=True)
+    started = time.monotonic()
+
+    def progress(seq, done, total_bytes):
+        print("  [%d] %#x  %.2f s" % (seq, start + done, time.monotonic() - started),
+              flush=True)
+
+    info = driver.restore_range(image[start:end], start, progress=progress)
+    expected = crc32(image[start:end])
+    info["range"] = {"start": start, "length": length,
+                     "device_crc32": f"{info['device_crc32']:08x}",
+                     "golden_crc32": f"{expected:08x}"}
+    info["range_crc_match"] = info["device_crc32"] == expected
+    if verify_full:
+        # A range session ends in DONE and the state machine never leaves it,
+        # so the full sweep needs a fresh boot. That is also what makes it a
+        # clean proof: a brand-new context reads back the whole chip.
+        print("full-chip CRC sweep after reset (%d bytes) ..." % total, flush=True)
+        link.reset_and_arm()
+        sweep = Driver(link, total, timeout, None).verify()
+        info["full_chip_crc32"] = sweep["device_crc32"]
+        info["full_chip_crc_match"] = sweep["device_crc32"] == crc32(image)
+    return info
+
+
 def finalize(out_dir, payload):
     out_dir = Path(out_dir)
     payload = dict(payload)
@@ -725,6 +849,18 @@ def check_sim_result(result):
     return problems
 
 
+def check_sim_range_result(result):
+    problems = []
+    if result["device_crc32"] != result["range_crc32"]:
+        problems.append(f"device CRC {result['device_crc32']:08x} != range CRC "
+                        f"{result['range_crc32']:08x}")
+    if not result["chip_matches_image"]:
+        problems.append("chip content differs from the golden image after the range restore")
+    if result["program_without_erase"]:
+        problems.append(f"{result['program_without_erase']} pages programmed before erase")
+    return problems
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--image", default=None)
@@ -741,6 +877,11 @@ def main(argv=None):
     ap.add_argument("--cut-at-block", type=int, default=-1)
     ap.add_argument("--cut-phase", choices=("erase", "program", "verify"), default="program")
     ap.add_argument("--plan", action="store_true", help="print the plan and exit")
+    ap.add_argument("--block", type=int, default=None,
+                    help="restore only the block at this 0-based 32 KiB index")
+    ap.add_argument("--block-count", type=int, default=1)
+    ap.add_argument("--verify-full", action="store_true",
+                    help="after a range restore, reset and sweep the whole chip")
     ap.add_argument("--selftest", action="store_true")
     args = ap.parse_args(argv)
     if args.selftest:
@@ -772,6 +913,57 @@ def main(argv=None):
         run_dir = base / datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         run_dir.mkdir(parents=True, exist_ok=False)
         expected_crc = crc32(image)
+        if args.block is not None:
+            if args.block < 0 or args.block_count < 1:
+                raise HostError("--block must be >= 0 and --block-count >= 1")
+            start = args.block * BLOCK_HINT
+            length = args.block_count * BLOCK_HINT
+            if start + length > total:
+                raise HostError(f"blocks {args.block}+{args.block_count} run past the image")
+            range_crc = crc32(image[start:start + length])
+            if args.hardware:
+                if args.mailbox_addr is None:
+                    raise HostError("--hardware requires --mailbox-addr")
+                mailbox = int(args.mailbox_addr, 0)
+                try:
+                    info = run_hardware_range(image, start, length, mailbox, args.cli,
+                                              run_dir, args.block_timeout, args.verify_full)
+                except HostError as exc:
+                    finalize(run_dir, {"status": "failed", "mode": "range",
+                                       "hardware_mode": True, "error": str(exc),
+                                       "image_sha256": digest,
+                                       "range": {"start": start, "length": length}})
+                    raise
+                match = bool(info["range_crc_match"]) and \
+                    bool(info.get("full_chip_crc_match", True))
+                payload = {"status": "passed" if match else "failed", "mode": "range",
+                           "hardware_mode": True, "crc_match": match,
+                           "image_sha256": digest,
+                           "image_crc32": f"{expected_crc:08x}",
+                           "range_target_crc32": f"{range_crc:08x}",
+                           **info}
+                finalize(run_dir, payload)
+                return 0 if match else 1
+            cut = None
+            if args.cut_at_block >= 0:
+                cut = {"at": start + args.cut_at_block * BLOCK_HINT,
+                       "phase": args.cut_phase,
+                       "label": f"range block {args.cut_at_block} {args.cut_phase}"}
+            try:
+                result = run_sim_range(image, start, length, cut,
+                                       args.block_timeout, run_dir)
+            except HostError as exc:
+                finalize(run_dir, {"status": "failed", "mode": "range",
+                                   "hardware_mode": False, "error": str(exc),
+                                   "image_sha256": digest})
+                raise
+            problems = check_sim_range_result(result)
+            payload = {"status": "passed" if not problems else "failed", "mode": "range",
+                       "hardware_mode": False, "problems": problems,
+                       "crc_match": not problems, "image_sha256": digest,
+                       "image_crc32": f"{expected_crc:08x}", **result}
+            finalize(run_dir, payload)
+            return 0 if not problems else 1
         if args.hardware:
             if args.mailbox_addr is None:
                 raise HostError("--hardware requires --mailbox-addr")
@@ -843,6 +1035,39 @@ def selftest():
     if result["device_crc32"] != result["image_crc32"]:
         raise AssertionError("verify CRC mismatch")
     print("  sim verify mode: read-only full-chip CRC matches")
+
+    # Range restore: the seed holds the golden image with the last block wiped,
+    # so matching the whole chip proves the untouched block stayed untouched.
+    result = run_sim_range(image, 32768, 32768)
+    problems = check_sim_range_result(result)
+    if problems:
+        raise AssertionError("range restore: " + "; ".join(problems))
+    print(f"  sim range restore: {result['blocks']} block, device crc="
+          f"{result['device_crc32']:08x}, rest of chip intact")
+
+    result = run_sim_range(image, 32768, 32768, cut={"at": 32768, "phase": "erase"})
+    problems = check_sim_range_result(result)
+    if problems:
+        raise AssertionError("range cut+retry: " + "; ".join(problems))
+    if result["attempts_count"] != 2:
+        raise AssertionError("range cut did not force a second attempt")
+    print(f"  sim range power cut: converged on attempt {result['attempts_count']}")
+
+    # The device must reject a span that runs past the end of the chip before
+    # it erases anything, and it must say so through the mailbox error code.
+    link, chip, _ = open_sim(total, None, seed=image)
+    try:
+        try:
+            Driver(link, total, 30.0).arm(new_session(), CMD_RESTORE_RANGE,
+                                          start=4096, length=total)
+        except DeviceError as exc:
+            print(f"  device rejects an out-of-range span: {exc}")
+        else:
+            raise AssertionError("out-of-range span was accepted")
+    finally:
+        link.close()
+    if chip.erases:
+        raise AssertionError("a rejected span must not erase anything")
 
     print("ALL RESTORE HOST SELFTESTS PASSED")
     return 0

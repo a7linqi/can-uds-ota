@@ -43,6 +43,12 @@
 #define NR_CMD_BASE          0x80000000u
 #define NR_CMD_RESTORE       0xA1000000u
 #define NR_CMD_VERIFY        0xA2000000u
+/* Range restore: same block protocol, but the session only covers
+ * [offset, offset+length). The host puts the start in offset and the byte
+ * count in length BEFORE writing the command word, so a targeted repair of a
+ * few written blocks costs one erase per sector instead of a 90-minute
+ * full-chip rewrite. */
+#define NR_CMD_RESTORE_RANGE 0xA3000000u
 #define NR_MAX_SEQ           0x7FFFFFFFu
 
 #define NR_ST_IDLE           0u   /* boot state, waiting for a command */
@@ -106,6 +112,8 @@ typedef struct {
     uint32_t total;        /* bytes to restore/verify, multiple of NR_SECTOR_SIZE */
     uint32_t session;
     uint32_t seq;          /* blocks committed so far (also last committed seq) */
+    uint32_t start;        /* first byte covered by this session */
+    uint32_t end;          /* one past the last byte covered by this session */
     uint32_t offset;       /* next block offset */
     uint32_t blk_len;      /* current block */
     uint32_t blk_crc;
@@ -113,7 +121,7 @@ typedef struct {
     uint32_t crc;          /* running full-image CRC32 */
     uint32_t blocks_done;
     uint32_t bytes_done;
-    uint8_t  mode;         /* 0 none, 1 restore, 2 verify */
+    uint8_t  mode;         /* 0 none, 1 restore, 2 verify, 3 range restore */
     uint8_t  state;
     uint16_t page_len;     /* 1..NR_PAGE_SIZE: needs 9 bits, not 8 */
     uint8_t  scratch[NR_PAGE_SIZE];

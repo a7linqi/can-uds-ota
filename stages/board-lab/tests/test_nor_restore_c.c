@@ -141,6 +141,47 @@ static int restore_all(nr_ctx_t *c, const uint8_t *img, uint32_t total, uint32_t
     return -4;
 }
 
+/* Range restore: only [start, start+len) is touched. Same submit handshake as
+ * a full restore, so a range run also proves the block protocol itself. */
+static int restore_range(nr_ctx_t *c, const uint8_t *img, uint32_t start,
+                         uint32_t len, uint32_t session)
+{
+    volatile nr_mailbox_t *mb = c->mb;
+    uint32_t off = start, end = start + len, seq = 0u, i;
+    int r;
+
+    mb->h.session = session;
+    mb->h.offset = start;                  /* read by the device when the */
+    mb->h.length = len;                    /* command word lands, not before */
+    mb->h.ack = NR_CMD_RESTORE_RANGE;
+    for (i = 0u; i < 2000u; i++) {
+        r = nr_service(c);
+        if (r < 0) return -1;
+        if (mb->h.status == NR_ST_READY) break;
+    }
+    if (mb->h.status != NR_ST_READY) return -2;
+
+    while (off < end) {
+        uint32_t n = end - off;
+        if (n > NR_BLOCK_SIZE) n = NR_BLOCK_SIZE;
+        memcpy((void *)mb->data, img + off, n);
+        mb->h.seq = ++seq;
+        mb->h.offset = off;
+        mb->h.length = n;
+        mb->h.crc32 = crc32_calc(img + off, n);
+        mb->h.ack = seq;
+        for (i = 0u; i < 1000000u; i++) {
+            r = nr_service(c);
+            if (r == 1) return 1;
+            if (r < 0) return -1;
+            if (mb->h.status == NR_ST_BLOCK_OK && mb->h.ack == 0u && mb->h.seq == seq) break;
+        }
+        if (i == 1000000u) return -3;
+        off += n;
+    }
+    return -4;
+}
+
 static int verify_all(nr_ctx_t *c, uint32_t session, uint32_t *out_crc)
 {
     volatile nr_mailbox_t *mb = c->mb;
@@ -294,6 +335,47 @@ int main(void)
     check(mailbox.h.error == NR_ERR_INIT, "wrong error code for a misaligned total");
     check(erase_calls == 0u && program_calls == 0u, "misaligned total touched the chip");
     printf("  misaligned image size refused: OK\n");
+
+    /* 11. A range restore rewrites its own sectors and nothing else. */
+    model_reset();
+    memset(chip, 0xA5, sizeof chip);          /* sentinel outside the range */
+    machine_reset(TOTAL);
+    {
+        uint32_t start = 2u * NR_SECTOR_SIZE, len = 2u * NR_SECTOR_SIZE;
+        uint32_t i;
+        check(restore_range(&ctx, img, start, len, 0x7Fu) == 1, "range restore did not reach DONE");
+        for (i = 0u; i < start; i++)
+            if (chip[i] != 0xA5u) die("range restore touched a sector before the range");
+        for (i = start + len; i < TOTAL; i++)
+            if (chip[i] != 0xA5u) die("range restore touched a sector after the range");
+        check(memcmp(chip + start, img + start, len) == 0, "range content differs from the image");
+        check(mailbox.h.crc32 == crc32_calc(img + start, len), "DONE CRC is not the range CRC");
+        check(mailbox.h.offset == start + len, "DONE offset is not the range end");
+        check(erase_calls == len / NR_SECTOR_SIZE, "erase count is not one per range sector");
+        check(program_without_erase == 0u, "a range page was programmed before its sector was erased");
+        printf("  range restore [%#x,%#x): %u sectors, CRC=%08X, neighbours intact: OK\n",
+               start, start + len, erase_calls, (unsigned)mailbox.h.crc32);
+    }
+
+    /* 12. Out-of-bounds and misaligned ranges are refused before any erase. */
+    model_reset();
+    machine_reset(TOTAL);
+    mailbox.h.session = 0x80u;
+    mailbox.h.offset = 2u * NR_SECTOR_SIZE;
+    mailbox.h.length = TOTAL;                 /* runs past the end */
+    mailbox.h.ack = NR_CMD_RESTORE_RANGE;
+    check(nr_service(&ctx) == -1, "out-of-range span was accepted");
+    check(mailbox.h.error == NR_ERR_BAD_REQUEST, "wrong error code for an out-of-range span");
+
+    machine_reset(TOTAL);
+    mailbox.h.session = 0x81u;
+    mailbox.h.offset = 100u;                  /* not sector aligned */
+    mailbox.h.length = NR_SECTOR_SIZE;
+    mailbox.h.ack = NR_CMD_RESTORE_RANGE;
+    check(nr_service(&ctx) == -1, "misaligned span was accepted");
+    check(mailbox.h.error == NR_ERR_BAD_REQUEST, "wrong error code for a misaligned span");
+    check(erase_calls == 0u && program_calls == 0u, "a refused range touched the chip");
+    printf("  refused ranges leave NOR untouched: OK\n");
 
     printf("ALL NOR_RESTORE STATE MACHINE TESTS PASSED\n");
     return 0;

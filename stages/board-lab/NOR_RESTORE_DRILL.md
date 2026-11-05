@@ -62,6 +62,17 @@ READY / BLOCK_OK / DONE。这解决了一个真实竞态 —— 上一块的 `BL
 
 命令值 ≥ `0x80000000`，合法 seq ≤ `0x7FFFFFFF`，因此单个字不会歧义。
 
+三条命令：`0xA1000000` 整片恢复、`0xA2000000` 只读核验、`0xA3000000` 范围恢复。
+范围恢复复用同一套块协议，差别只在会话边界：**主机在写命令字之前**把起点放进
+`offset`、字节数放进 `length`，设备在 `begin()` 里先校验（必须扇区对齐、非 0、
+且 `start + length <= total`）再把它们清零。校验不过就回 `ERROR/BAD_REQUEST`，
+一个扇区都不擦。会话结束条件是 `offset >= end`，DONE 发布的是 `end` 与**该范围**
+的 CRC32，不是整片 CRC。整片恢复等价于 `start=0, end=total`，行为完全不变。
+
+为什么要它：整片 16 MiB 恢复一次 5236 s，而写一个块的实验只需要改 32 KiB。
+有了范围恢复，一次"写坏→修回"从 87 分钟降到约 78 s（写 11 s + 全片扫描 66 s），
+恢复动作才会被真的执行，而不是被"太贵了"逼成跳过。
+
 ## 设备侧行为（`nor_restore.c`）
 
 每个块严格按此顺序，任何一步失败立即发布 `ERROR` + 错误码并停住：
@@ -110,7 +121,13 @@ C:\Users\li14\AppData\Local\Programs\Python\Python312\python.exe host\nor_restor
 ... --mode verify
 
 # 硬件（需 ST-Link + 已烧 nor_restore_WRITE.bin）
-... --hardware --mailbox-addr 0x200003B0
+... --hardware --mailbox-addr 0x200003B8
+
+# 只重写一块（0 基 32 KiB 块号），随后复位做全片 CRC 扫描
+... --block 0 --verify-full --hardware --mailbox-addr 0x200003B8
+
+# 一次恢复多块
+... --block 8 --block-count 4 --verify-full --hardware --mailbox-addr 0x200003B8
 ```
 
 模拟器的三点设计（都不是"再写一遍 Python 逻辑"）：
@@ -125,6 +142,8 @@ C:\Users\li14\AppData\Local\Programs\Python\Python312\python.exe host\nor_restor
 
 `--hardware` 前会核对证据文件：构建记录 `status=ready_for_review`、本阶段输入哈希、
 冻结核心哈希、mailbox 地址、以及三个产物的 sha256 全部匹配才允许连板子。
+mailbox 地址由构建记录给出（`ctx` 结构一变就跟着变，2026-11-05 加了 `start`/`end`
+两个字段后从 `0x200003B0` 变成 `0x200003B8`；写错会直接被闸门拒绝，不会打到错地址）。
 
 ## 已完成的验证（2026-11-04，**无硬件**）
 
@@ -204,6 +223,28 @@ CLI 报 `Failed to download data!`——**但那个字其实写进去了**。主
 握手层的假通过不可能伪装成 `passed`。
 
 **512 块全程演练于 08:24 启动，结果待填**（本节不预写结论）。
+
+## 范围恢复硬件 A/B（2026-11-05，实机）
+
+目的不是"跑一遍没报错"，而是先证明芯片真的被改坏，再证明只改回去坏的那一块。
+证据在 `evidence/nor-range/`，四份 manifest 依次是：
+
+| 步骤 | 命令 | 结果 |
+|---|---|---|
+| 1 故意写坏块 0 | `--image tampered-block0.bin --block 0 --hardware` | 11.0 s，器件范围 CRC `0xBFBAD03B` = 篡改块 CRC |
+| 2 全片扫描 | 同一文件 `--mode verify` | 器件整片 CRC `0x7660036E` = 篡改镜像 CRC，66.2 s |
+| 3 恢复块 0 | 金标 `--block 0 --verify-full` | 10.95 s，范围 CRC `0x830246CC` = 金标块 0 CRC |
+| 4 复位后全片扫描 | 同上（同一次运行内） | 整片 CRC `0xA4188821` = 金标，`full_chip_crc_match=true` |
+
+第 2 步是关键：整片 CRC 与篡改镜像逐字节相等，说明"写坏"这件事真的发生在硅片上，
+而不是只改了主机内存；同时其余 511 块仍是金标内容，因此第 4 步的整片 CRC 才能
+只靠重写一块就回到 `0xA4188821`。
+
+第 4 步为什么必须复位：范围会话走到 DONE 就停在那里，状态机不再接受新命令，
+所以全片扫描是一次全新的启动上下文 —— 顺带也证明扫描读的是硅片而不是残留状态。
+
+代价对比：整片恢复 5236 s，写一块 + 全片扫描 77 s，**67×**。此后每次实机写 NOR
+都可以先备份块、写完再定向修回，不必为了做一次实验等 90 分钟。
 
 ## 上板演练步骤（硬件到位后）
 
