@@ -4,6 +4,8 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 功能/决策 | [把三个已验证补丁合入产品仓库，回归从 3164 涨到 3328](entries/2026-11-05-three-packages-merged.md) | merge, red-green, isotp, uds, can-uart | Y |
+| 2026-11-05 | 决策（推翻旧判断） | [合并后包内 verify.py 判别力消失，以及四个打包期结论被推翻](entries/2026-11-05-package-verify-lost-discrimination.md) | verify.py, baseline, crlf, git-apply | Y |
 | 2026-11-04 | 缺陷 | [512 块演练在第 478 块停住（芯片内容仍等于金标，握手有竞态）](entries/2026-11-04-drill-stall-at-478.md) | nor-restore, swd-mailbox, race | Y |
 | 2026-11-04 | 功能 | [把五项自检收成一条命令（27 秒），并反证它真的会红](entries/2026-11-04-verify-all-aggregator.md) | verify_all, negative-control | Y |
 | 2026-11-04 | 缺陷 | [0x22 用 0x72 顶替"响应过长"（0x14），以及一条因错误原因而通过的测试](entries/2026-11-04-uds-nrc-response-too-long.md) | uds, nrc, iso14229-1, buffer | Y |

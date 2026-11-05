@@ -39,7 +39,7 @@
 
 - 一轮聚焦一个能验收的问题。先检查现有实现、解释改动原因，再做最小必要修改；不要为了增加代码量扩大功能。
 - 改协议、存储或恢复逻辑时，针对边界和失败路径运行有意义的回归；必要时覆盖 ZG/ZE 两种容量。仅改文档不需要重跑全量 C 测试。不要重复相同且仍有效的检查来制造进度。
-- 每轮改动先跑一条快速自检：`build-temp\static-check\check.cmd`（**8.9 秒**，四道闸门：`-fanalyzer` 10 文件 / `-Werror` 21 文件 / 3164 条主机断言 / 28 项单测）。要刷新证据快照或跑目标构建时用 `python verify_project.py`（**73 秒**）。注意 `-fanalyzer` 必须配 `-c -o`，配 `-fsyntax-only` 会静默失效。
+- 每轮改动先跑一条快速自检：`build-temp\static-check\check.cmd`（四道闸门：`-fanalyzer` 10 文件 / `-Werror` 24 文件 / 3328 条主机断言 / 28 项单测；2026-11-05 复跑全过）。要刷新证据快照或跑目标构建时用 `python verify_project.py`（**73 秒**）。注意 `-fanalyzer` 必须配 `-c -o`，配 `-fsyntax-only` 会静默失效。
 - 更新实现后，受影响的旧证据不自动适用于新源码。重新生成所需验证和构建证据，交付固件时核对其源码及产物哈希。
 - 每轮交付说明五件事：改了哪些文件及原因；执行了哪些命令；实际结果；仍未验证的部分；下一步的具体入口。同步更新 `ota-core/docs/WORK_STATUS.md`，需要跨工具交接时更新本文件。
 - 区分断言数、用例数、模型断电场景和实机断电次数。未执行的验证写“未执行”，不合并成一个夸大的总测试数；编译/链接成功不等于板上运行成功。
@@ -235,22 +235,28 @@ python tools/package_project.py --include-firmware --output "工程目录外的�
 5. ~~NOR/EEPROM 原始数据备份~~ **已完成**；写向驱动已在实机走通（96 KiB 冒烟 + 中断仍等于金标）。整片 512 块演练在 477/512 停住，但芯片内容经器件自算 CRC 确认等于金标 —— **剩下要修的是握手竞态，不是数据**。
 6. 之后才回填实测简历数字，以及推进签名和其他扩展。
 
-**2026-11-04 23:00 软件侧新增**（都在 `build-temp/`，产品仓库零改动，等维护端合并）：
+**2026-11-04 23:00 软件侧新增**（取证包都在 `build-temp/`，当时产品仓库零改动）：
+
+> **2026-11-05 合并结果**：`isotp-stmin`、`uds-nrc`、`uart-resync` 三个正式包已合入 `can-uds-ota-learning`（提交 `192514b` / `c894314` / `f1a5294`，证据重刷 `7394619`，均已 push）。
+> 合并不是直接 apply：每个包都先在合并树上「只加测试、不改源码」跑红，再打源码补丁跑绿 —— 红 **3315/4**、**3327/1**，绿 **3319/0**、**3328/0**。三包共存后两套容量各 **3328/0**、420 断电场景不变；四道独立闸门（`-fanalyzer` 10 文件 / `-Werror` 24 文件 / 3328/0 / 28 单测）全过。`metadata-page-package` 是主机模型守卫，**仍未合入**。
+
 
 | 包 | 内容 | 可核对数字 |
 |---|---|---|
-| `build-temp/isotp-stmin-package/` | **正式合并包**：ISO-TP 保留 STmin 修复（源码 1 行）+ 135 条边界断言 + 测试更新，两 diff 同进同出 | A `3164/0` · B `3299/0` · C `3163/1` · D `3309/0`；`verify.py` 8.6 秒 |
+| `build-temp/isotp-stmin-package/` | **正式合并包（已合入 2026-11-05）**：ISO-TP 保留 STmin 修复（源码 1 行）+ 135 条边界断言 + 测试更新，两 diff 同进同出 | A `3164/0` · B `3299/0` · C `3163/1` · D `3309/0`；`verify.py` 8.6 秒 |
 | `build-temp/metadata-page-package/` | 真实 AT24C02 页规则守卫（主机端口不检查跨页，真芯片会拒） | 宽松 `15/0` · 严格 8 字节 `15/0` · 超严 4 字节 `3/12`（违规 2 次，证明守卫会红） |
-| `build-temp/uds-nrc-package/` | **正式合并包**：`0x22` 响应超长应回 NRC `0x14`（现为 `0x72`），源码 3 行 + 测试更新 + 带哨兵的边界测试 | A `3164/0` · B `3163/1` · C `3170/4` · D `3174/0`；4067 次带哨兵调用 0 越界；`verify.py` 8.5 秒 |
-| `build-temp/static-check/` | 四道闸门自检：`-fanalyzer` / `-Werror` / 3164 条主机断言 / 28 项单测 | 全过，**8.9 秒**；双击 `check.cmd` 即可 |
+| `build-temp/uds-nrc-package/` | **正式合并包（已合入 2026-11-05）**：`0x22` 响应超长应回 NRC `0x14`（现为 `0x72`），源码 3 行 + 测试更新 + 带哨兵的边界测试 | A `3164/0` · B `3163/1` · C `3170/4` · D `3174/0`；4067 次带哨兵调用 0 越界；`verify.py` 8.5 秒 |
+| `build-temp/static-check/` | 四道闸门自检：`-fanalyzer` / `-Werror` / 3328 条主机断言 / 28 项单测 | 2026-11-05 复跑全过：10 文件 0 诊断 / 24 文件 0 诊断 / 3328/0 / 28/0；双击 `check.cmd` 即可 |
 | `build-temp/build-gate-probe/` | `explorer_reference.h:14-15` 的 `#error` 闸门实测 | FLASHING/HANDOFF/WATCHDOG 任意一个为 1 都编译失败，全 0 才通过 |
 | `build-temp/merge-proof/` | 三个包**同时合入**的共存证据（`build.cmd`，约 2 秒） | **3334 checks / 0 failures**，420 断电场景不变；两个 `test_main.patch` 实测会冲突，手工加两行即可（第三个包刻意不碰 `test_main.c`） |
 | `build-temp/uds-isotp-edges/` | 边界探针的**取证现场**（`report.md`、`run.cmd`、`regress.cmd`），正式交付见上面的 package | 同上 |
 | `build-temp/uds-bounds/` | `uds_handle()` 响应构建器的取证现场（独立版探针 + 两个 diff） | 旧 `12138/1` → 补丁 `12138/0` |
+| `build-temp/uart-resync-package/` | **正式合并包（已合入 2026-11-05）**：UART 半帧后滑动窗口重同步 | 包内实测截断扫描 92/100 → 0/100；合并树红 **3327/1** → 绿 **3328/0** |
 
-`evidence/verification.json` 已在 2026-11-04 22:53 **重跑刷新**（之前 126 个源码哈希有 117 个失效）：
-`status=passed`、耗时 73.3 秒、两套容量各 3164 断言、7 项 virtual CAN、四套 GNU 只读镜像链接通过；
-`hardware_verified=false`、`keil_target_linked=false` 保持不变。
+`evidence/verification.json` 最新一次在 **2026-11-05（三包合入后）** 重跑刷新：
+`status=passed`、耗时 76.0 秒、两套容量各 3328 断言、129 个源码哈希、7 项 virtual CAN、四套 GNU 只读镜像链接通过；
+`hardware_verified=false`、`target_linked=true`、`keil_target_linked=false` 保持不变。
+（2026-11-04 22:53 那次为 73.3 秒 / 3164 断言 / 126 哈希，已过时。）
 
 四条结论会影响后面的计划：
 
