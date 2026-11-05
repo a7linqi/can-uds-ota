@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 功能（实机验证） | [让 DTC 表第一次从真实板子上答话](entries/2026-11-05-dtc-table-first-real-answer.md) | uds, dtc, 0x19, 0x14, nrc, board-lab | Y |
 | 2026-11-05 | 缺陷（实机致命） | [I2C 总线锁死：9 个时钟脉冲救回一块「变砖」的板子](entries/2026-11-05-i2c-bus-lockup-recovery.md) | i2c, eeprom, bus-clear, hal, recovery | Y |
 | 2026-11-05 | 功能（实机验证） | [TRIAL 回滚：让一块板子「升级失败」给你看](entries/2026-11-05-trial-rollback-on-silicon.md) | ota, trial, rollback, boot, metadata | Y |
 | 2026-11-05 | 功能（实机闭环） | [从运行中的应用连续升级三次，并读回内部 Flash 逐字节比对](entries/2026-11-05-three-consecutive-upgrades-on-silicon.md) | uds, ota, handoff, ed25519, readback | Y |
