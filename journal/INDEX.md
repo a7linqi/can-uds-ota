@@ -4,6 +4,8 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 缺陷（实机致命） | [I2C 总线锁死：9 个时钟脉冲救回一块「变砖」的板子](entries/2026-11-05-i2c-bus-lockup-recovery.md) | i2c, eeprom, bus-clear, hal, recovery | Y |
+| 2026-11-05 | 功能（实机验证） | [TRIAL 回滚：让一块板子「升级失败」给你看](entries/2026-11-05-trial-rollback-on-silicon.md) | ota, trial, rollback, boot, metadata | Y |
 | 2026-11-05 | 功能（实机闭环） | [从运行中的应用连续升级三次，并读回内部 Flash 逐字节比对](entries/2026-11-05-three-consecutive-upgrades-on-silicon.md) | uds, ota, handoff, ed25519, readback | Y |
 | 2026-11-05 | 缺陷（观测手段有错） | [换掉一个永远说 1 的遥测字节，并承认 `31 01 00 01` 不是门控探针](entries/2026-11-05-telemetry-byte-that-always-lied.md) | uds, status-did, 0x0200, nrc-0x22, telemetry | Y |
 | 2026-11-05 | 缺陷（环境陷阱） | [找到「跨脚本状态不持久」的真凶：关串口会复位板子](entries/2026-11-05-port-close-resets-the-board.md) | ch340, dtr, nrst, handoff, serial | Y |

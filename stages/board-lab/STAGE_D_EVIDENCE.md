@@ -127,3 +127,98 @@ CH340 的 DTR/RTS 接了 NRST。实测：读状态得 seq 59 / `role=application
 
 v9/v10 的 7 倍慢是 `--handoff` 里把 `ser.timeout` 临时改成 0.2 s 后忘了恢复（传输层默认 0.01 s），
 不是固件问题；修复后回到 0.06–0.34 s。
+
+## 回滚与总线恢复（2026-11-05 傍晚，板子在线）
+
+这一节记录两件与"恢复能力"直接相关的实测：一件是修好了让整机降级的缺陷，
+一件是把核心卖点从"主机模型"搬到了硅片上。
+
+### 1. I2C 总线锁死：整机降级成"每次启动停在 loader"
+
+**现象**：`22 02 00` 返回 NRC `0x72`，连续三次；同一时刻 `10 01` / `10 03` / `22 F1 90` 全部正常。
+复位横幅显示 NOR 完全健康（`jedec_id=0x00EF4018`、`nor_read_crc32=0xA4199799`），
+只有 `EEPROM read failed` / `eeprom_crc32=0x00000000`，随后 `loader: storage not ready, staying in the loader`。
+
+**根因**：24C02 在传输中途被复位，持续拉低 SDA；`HAL_I2C_Init` 无法产生 START
+（START 本身就是"SCL 高时拉低 SDA"，而 SDA 已低），于是所有 I2C 事务永久失败。
+触发条件正是本项目每天都在做的动作——**关串口 = 复位**，而复位可能落在 EEPROM 写窗口内。
+
+**修复**：`i2c_bus_clear()`，在 `gpio_init()` 之后、`peripherals_init()` 之前执行
+9 个时钟 + STOP，再交回 AF4。
+
+| 判据 | 修复前 | 修复后 |
+|---|---|---|
+| 横幅 | `EEPROM read failed` | `EEPROM 256-byte read complete` |
+| `eeprom_crc32` | `0x00000000` | `0x316AB2D3` |
+| loader | `storage not ready, staying in the loader` | `handing off to the app at 08010000` |
+| 状态 DID | NRC `0x72` | 正常 44 字节，`active_version=11` |
+
+NOR 的 `jedec_id` 与 `nor_read_crc32` 修复前后完全一致，排除"碰巧重启好了"。
+**全程未断电**——这正是软件恢复相对于拔插头的价值。
+
+### 2. TRIAL 失败 → 备份区回滚（核心卖点的实物证据）
+
+手段：`OTA_EXPLORER_APP_SICK` 构建一个"能启动、能应答、拒绝确认自己"的 App
+（`ota_user_app_healthy()` 返回 0），`MAX_BOOT_ATTEMPTS=3`。
+读状态会关串口，关串口即复位——**观测动作本身就是 trial 推进器**。
+
+| 轮次 | state | attempts | active | pending | seq |
+|---|---|---|---|---|---|
+| 0 | TRIAL | 2 | 11 | 12 | 95 |
+| 1 | TRIAL | 3（到顶） | 11 | 12 | 96 |
+| 2 | 无响应（正在擦写 960 KiB 内部 Flash） | — | — | — | — |
+| 3 | IDLE | 0 | 11 | 0 | 98 |
+
+读回判决（ST-Link `-u 0x08010000 0xAD00`）：
+
+```
+rollback   44288 B  sha256=bed181e9ea2b4089  crc32=0x5F966357
+v11 ref    44288 B  sha256=bed181e9ea2b4089  crc32=0x5F966357
+identical: True
+```
+
+回滚是**逐字节等价**于升级前的镜像，不是"大概回去了"。
+随后装正常 v13 成功（`34` 13.91 s、`37` 0.34 s、`31` 0.30 s），最终 `active_version=13`、`seq 106`、`IDLE`，
+证明 `RESTORING` 之后元数据与备份区都处于干净状态。
+
+### 3. 本轮固件与镜像
+
+| 目标 | 字节 | sha256 |
+|---|---:|---|
+| loader（含 bus clear） | 47524 | `230a50eb…` |
+| app（含 bus clear） | 44480 | `2a0a7c20…` |
+| sick（trial 实验用，不进产品） | 44480 | `508ca8b8…` |
+| v11（回滚目标，bus clear 之前） | 44288 | `bed181e9…` |
+
+四套 GNU 只读镜像：16372 / 44432 / 16372 / 44440 B。
+`verification.json` `status=passed`，201.8 s，136 个源码哈希，每容量 3421 断言 × 2。
+
+### 4. 复现方式（脚本本身在 .gitignore 里，所以在此留底）
+
+`build-temp/` 不入库，`sick` 变体只存在于 `build-temp/build_stage_d.py`。
+重建它需要的全部信息如下——与 `app` 变体唯一的差别是最后一行宏：
+
+```python
+"sick": {
+    "main": "firmware/app/main.c",
+    "ld": "firmware/linker/app_boot.ld",
+    "defines": ["OTA_ENABLE_FLASHING=0", "OTA_ENABLE_BOOT_HANDOFF=0",
+                "OTA_ENABLE_WATCHDOG=0", "OTA_EXPLORER_UPDATE_CAPABLE=0",
+                "OTA_EXPLORER_STORAGE_TRUSTED=1", "OTA_EXPLORER_HANDOFF_CAPABLE=0",
+                "OTA_EXPLORER_BOOT_ROLE=2", "OTA_EXPLORER_APP_SICK=1"],
+},
+```
+
+`OTA_EXPLORER_APP_SICK` 在 `explorer_reference.c` 里默认为 0（`#ifndef` 兜底），
+为真时只改一个返回值：`ota_user_app_healthy()` 返回 0。**产品镜像永远不要定义它。**
+
+复现命令：
+
+```
+python build-temp/build_stage_d.py sick
+python tools/make_image.py --version N --sign build-temp/stage-d/sick/sick.bin <out>.img2
+python host/uds_stage_d.py --port COM9 --handoff --image <out>.img2 --out evidence/<dir>
+python host/power_probe.py --label "trial rN" --out evidence/rollback/rN   # 每轮即一次复位
+```
+
+`evidence/` 同样不入库，所以 JSON 产物只在本机；上面这张表和读回哈希才是入库的证据。
