@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 功能 | [512 块恢复演练通过，产品 NOR 驱动首次读通真实硅片](entries/2026-11-05-drill-passed-and-driver-on-silicon.md) | nor-restore, crc32, spi_nor, w25q128, evidence | Y |
 | 2026-11-05 | 功能/决策 | [把 NOR 擦写能力接进参考 BSP，同时把「能写」和「允许写」拆成两道门](entries/2026-11-05-nor-write-path-into-bsp.md) | spi_nor, wren, uvprojx, #error, storage_verified | Y |
 | 2026-11-05 | 质量检查/推翻旧判断 | [全量复核任务清单：T14 看门狗也是「已实现但被误记为未开始」](entries/2026-11-05-task-list-recheck.md) | task-list, watchdog, code-review | N |
 | 2026-11-05 | 环境/缺陷 | [512 块演练卡在 49：每块删一个临时文件触发了安全删除守卫](entries/2026-11-05-bulk-delete-guard-killed-drill.md) | safe-delete, bulk-delete, long-running, tee | N |
