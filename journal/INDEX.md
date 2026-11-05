@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 验证（实机） | 断电中断升级：下载到 9690 字节时拔掉全部供电，板子照常恢复 | 断电中断、S3 保活、NRC≠断电、事务重启、逐字节读回 | Y |
 | 2026-11-05 | 验证（实机） | [回滚也要交得出证明](entries/2026-11-05-rollback-replays-the-ticket.md) | TRIAL 回滚 / 凭证重放 / 3E 存活探测 / SWD 电压 / 空闲态断电 16.5 s | Y |
 | 2026-11-05 | 功能（安全启动/实机） | [给 App 区末尾装一块签名凭证，然后雇一个攻击者去打它](entries/2026-11-05-secure-boot-on-silicon.md) | secure-boot, ed25519, ticket, crc32, rollback | Y |
 | 2026-11-05 | 功能（实机验证） | [让 DTC 表第一次从真实板子上答话](entries/2026-11-05-dtc-table-first-real-answer.md) | uds, dtc, 0x19, 0x14, nrc, board-lab | Y |
