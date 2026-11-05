@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 环境/缺陷 | [512 块演练卡在 49：每块删一个临时文件触发了安全删除守卫](entries/2026-11-05-bulk-delete-guard-killed-drill.md) | safe-delete, bulk-delete, long-running, tee | N |
 | 2026-11-05 | 缺陷/推翻旧判断 | [定死 512 块演练停在 478 的根因：设备比主机的一次读还快](entries/2026-11-05-drill-handshake-root-cause.md) | nor-restore, swd-mailbox, race, ack | Y |
 | 2026-11-05 | 环境 | [硬件闸门把主机工具脚本也算作固件输入](entries/2026-11-05-build-binding-too-wide.md) | hardware-gate, stage-hashes, build-record | N |
 | 2026-11-05 | 决策（推翻旧判断） | [推翻清单判断：`0x3E` TesterPresent 与 S3 超时早就实现了](entries/2026-11-05-tester-present-already-implemented.md) | uds, 0x3E, S3, task-list | N |

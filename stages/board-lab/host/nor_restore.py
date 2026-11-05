@@ -363,13 +363,15 @@ class SwdLink:
         self._refresh()
 
     def put_data(self, offset, data):
-        tmp = self.run_dir / f"blk-{self._tag}-{self._n + 1:05d}.bin"
-        if tmp.exists():
-            raise HostError("block temp path already exists")
+        # Reuse ONE scratch file for the whole run and never delete it.
+        # Deleting one temp file per block hit the environment's bulk-delete
+        # guard at exactly 50 deletions and killed the 2026-11-05 512-block
+        # run at block 49 (no manifest was written). Overwriting the same
+        # 32 KiB file keeps the transport identical and performs zero deletes.
+        tmp = self.run_dir / f"blk-{self._tag}-scratch.bin"
         tmp.write_bytes(bytes(data))
         self._run(["-c", "port=SWD", "index=0", "mode=HOTPLUG", "freq=1000",
                    "-w", str(tmp), hex(self.base + OFF_DATA)])
-        tmp.unlink()   # transport scratch, not evidence: 512 x 32 KiB per run
 
     @property
     def power_lost(self):
