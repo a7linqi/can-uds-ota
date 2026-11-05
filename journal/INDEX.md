@@ -4,6 +4,9 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-05 | 缺陷（推翻旧判断） | [撤回「门控卡死」的判断：NRC 0x22 有两个原因，而我把它们当成了一个](entries/2026-11-05-gate-is-not-a-fuse.md) | uds, nrc-0x22, ota_enable_flashing, status-did, stm32_diag | Y |
+| 2026-11-05 | 功能 | [给运行中的 App 一条进入编程会话的路：`boot_request` 一次写入、一次消费](entries/2026-11-05-app-to-loader-handoff.md) | uds, boot, metadata, handoff, stm32 | Y |
+| 2026-11-05 | 缺陷 | [修好「App 坏了就再也装不进新包」：READY 分支不该被 active 校验拦住](entries/2026-11-05-broken-active-blocked-ready.md) | boot, metadata, sane, image_validate_app, ota | Y |
 | 2026-11-05 | 决策（推翻旧判断） | [推翻：EEPROM 的 crc32 不是内容指纹，是结构指纹](entries/2026-11-05-eeprom-crc-is-a-structure-fingerprint.md) | crc32, metadata, eeprom, at24c02 | Y |
 | 2026-11-05 | 功能 | [把合法签名包装进内部 Flash 并跳转过去](entries/2026-11-05-full-ota-on-silicon.md) | uds, bootloader, ed25519, handoff, stm32f407 | Y |
 | 2026-11-05 | 缺陷 | [UDS 说能收 512 字节，BSP 只肯收页内——阶段 C 之前先修跨页写](entries/2026-11-05-cross-page-write-found-by-block-c.md) | uds, 0x36, spi-nor, page-wrap, test-double | Y |

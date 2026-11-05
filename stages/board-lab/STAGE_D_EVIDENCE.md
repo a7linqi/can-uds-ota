@@ -56,5 +56,34 @@
   （`CRC32(m ‖ CRC32(m))` 为常数），四种不同元数据状态都得到 `0x316AB2D3`。
   2026-11-02 记的"`0x29058C73` 与上次一致"不构成内容一致的证据。
 - **"读到了陈旧快照"**：曾经据此把 256 B 一次读改成分块读，实测分块同样会失败，已回退。
-- **"安装后能自动发起下一次升级"**：元数据回到 IDLE 后每次复位都直接跳 App，App 没有 UDS，
-  第二次升级靠清零元数据模拟空片才做成。
+- **"安装后能自动发起下一次升级"**：当时确实做不到——元数据回到 IDLE 后每次复位都直接跳 App，
+  App 没有 UDS，第二次升级靠清零元数据模拟空片才做成。**该结论已于同日关闭**，见下一节。
+- **"App 收到 `34` 回 `7F 34 22` 说明门控坏了"**：App 编译时 `OTA_ENABLE_FLASHING=0`，
+  拒绝写服务是设计行为；把它当成故障，导致上一轮的排查方向整段跑偏（详见
+  `journal/entries/2026-11-05-gate-is-not-a-fuse.md`）。
+
+## 阶段 D 收尾：两个自检缺陷的修复与复验（2026-11-05 晚）
+
+阶段 D 完成后自检发现两处真实缺陷，都已修复并在实机上复验：
+
+| 缺陷 | 现象 | 修法 | 实机证据 |
+|---|---|---|---|
+| 没有 App→loader 入口 | IDLE 后每次复位直接跳 App，第二次升级只能靠清元数据 | `10 02` 在 App 侧把一次性 `boot_request` 写入 64 B 元数据（复用 `reserved[3]`），loader 启动时消费 | EEPROM seq 42→43（`boot_request=1`）；loader 打印 `loader: stop requested by the application` 并停住；随后从 loader 装 v5 成功 |
+| `active_size!=0` 但内部镜像损坏 → READY 卡死 | 合法新包永远装不进去，反复复位停在 loader | 校验改三态（VALID/CORRUPT/UNREADABLE），CORRUPT 时清 active 四字段（含 `min_version`）后照常安装，UNREADABLE 仍停 | 破坏 `0x08011000` 一个字（`4F`→`4E`，CRC `0x32EC9BA9`→`0x137FF3F6`），loader 打印 `loader: staying in the loader` 不再卡死；随后装 v3 并跳转 |
+
+同一轮还改了状态 DID：0x0200 的记录从 40 字节扩到 44 字节，末尾 4 字节是调度遥测
+（`programming_allowed` / `job_error` / `pending_in_flight` / `role|deadline_misses`）。
+目的是让"App 按构建拒绝"与"loader 门控故障"在总线上可区分——两者对应同一个 NRC `0x22`。
+
+当前固件（本轮重建）：loader 47308 B（sha256 `73c1a08e…`）、app 44280 B（sha256 `b704f99d…`）、
+签名包 v7 44376 B（payload 44280 B）。
+
+**本轮没做的**：板子未连接（只有蓝牙串口、无 ST-Link），所以 44 字节记录、`diag[3]` 的
+`role` 位在实物上尚未读数。待插板后执行：
+
+```
+python host/uds_gate_probe.py --port COM9 --out evidence/<dir> --probe-gate
+```
+
+它先读 `22 02 00` 打印全部字段（含 4 个遥测字节），再用一条不擦除的 `31 01 00 01`
+验证"遥测说能写"和"线上真的放行"是否一致。
