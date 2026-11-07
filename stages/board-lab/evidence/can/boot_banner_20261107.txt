@@ -1,0 +1,57 @@
+Boot banner capture - 2026-11-07 (real board, COM3 / CH340 USB_232, 115200 8N1)
+
+Source: C:\Users\li14\Desktop\pdf-read-resume\can_boot_log.py
+Port opened with dtr=False rts=False (CH340 DTR/RTS are wired to NRST; asserting
+them holds the MCU in reset). Captured 511 bytes in one session.
+
+----- RAW BANNER -----
+ATK Explorer reference pins; update engine disabled
+CAN: normal physical 500 kbit/s
+device_id=0x00000413
+flash_bytes=0x00100000
+hclk_hz=0x0A037A00
+pclk1_hz=0x0280DE80
+jedec_id=0x00EF4018
+NOR RDID read; fitted chip profile unconfirmed
+EEPROM 256-byte read complete
+eeprom_crc32=0x316AB2D3
+nor_status=0x00000000
+nor_bytes=0x01000000
+nor_read_crc32=0x6B027918
+NOR driver probe+dry read ok
+NOR program/erase hooks compiled in, update engine still gated
+loader diagnostics: request 7E0, response 7E8
+----- END BANNER -----
+
+WHAT THIS PROVES (board-side, runtime, measured)
+- "CAN: normal physical 500 kbit/s" is only printed by the
+  OTA_EXPLORER_CAN_LOOPBACK=0 branch, i.e. CAN_MODE_NORMAL, not silent loopback.
+- "loader diagnostics: request 7E0, response 7E8" is printed only AFTER
+  ota_bsp_can_start() returns 0, so HAL_CAN_Init / ConfigFilter / Start /
+  ActivateNotification all succeeded. The CAN1 controller is listening.
+- hclk_hz = 0x0A037A00 = 168000000 Hz; pclk1_hz = 0x0280DE80 = 42000000 Hz.
+  With Prescaler=6, BS1=11TQ, BS2=2TQ: 42 MHz / 6 / (1+11+2) = 500000 bit/s.
+  This upgrades the CAN bitrate from "calculated, clock unverified" to measured.
+- device_id 0x413 / flash_bytes 0x100000 (1 MiB) = ZG target as built.
+- NOR / EEPROM probes healthy; no "EEPROM read failed", no I2C lock-up.
+
+CONCURRENT MEASUREMENTS (same session, after the port-close reset)
+- can_errframe_probe.py: CAN_Initialize=0x0, CAN_Write=0x0,
+  CAN_Read=0x10, CAN_GetStatus=0x10 (PCAN_ERROR_BUSOFF), messages read: 0.
+- can_bringup_check.py: 20 x SID 0x22 requests, total RX frames: 0.
+- Driver side verified clear: PCAN-USB Status=OK / ProblemCode=0,
+  pcan_usb.inf 4.4.0.16619 (WHQL), PCANBasic.dll 4.6.2.753.
+- Board rails measured by user with a voltmeter: ATK MODULE 5 V,
+  OLED/CAMERA 3.3 V. CANH-CANL ~160 ohm, CANH/CANL ~2.3-2.4 V recessive.
+
+CONCLUSION AT THIS POINT
+Firmware, clock, bitrate, driver, power and cabling are all cleared. The board
+starts CAN1 in NORMAL mode yet no node answers on the bus. The remaining
+unverified link is the physical selection jumper P5 (V3; P11 on older boards):
+PA11/PA12 are shared between CAN1_RX/TX and USB FS D-/D+. If P5 is on the USB
+side, the MCU CAN_RX never reaches the transceiver and no ACK is generated.
+
+NOT YET VERIFIED
+- P5 jumper position (not visually confirmed).
+- CAN transceiver part number, 5 V at the transceiver VCC pin itself.
+- Real CAN link / any 0x7E8 response. Do NOT write "real CAN passed" yet.

@@ -1,0 +1,55 @@
+{
+  "test": "read-only build gate telemetry on real CAN",
+  "timestamp": "2026-11-07 15:54:21",
+  "transport": "PythonCanTransport(pcan, PCAN_USBBUS1, 500000) + IsoTpClient + UdsClient.demo_key",
+  "root_cause": "explorer_reference.h: OTA_EXPLORER_STORAGE_TRUSTED defaults to OTA_EXPLORER_UPDATE_CAPABLE (0 in the diagnostics READONLY target); BSP then forces config->storage_verified=0, so ota_stm32_ports_init() computes storage_ready=0 and stm32_eeprom.c eeprom_read() returns -1 unconditionally. metadata_load() therefore fails, append_did(UDS_DID_UPDATE_STATUS) returns -3 and UDS replies NRC 0x72. This is deliberate gate behaviour, not a defect.",
+  "expected": {
+    "0x22 F186": "positive response, session byte",
+    "0x22 0200": "7F 22 72",
+    "0x34": "7F 34 22 (conditions not correct) because programming_allowed = OTA_ENABLE_FLASHING && storage_ready = 0"
+  },
+  "events": [
+    {
+      "t_s": 0.0,
+      "label": "0x10 02 programming session",
+      "tx": "10 02",
+      "rx": "50 02 00 32 01 F4"
+    },
+    {
+      "t_s": 0.002,
+      "label": "0x22 F186 session DID",
+      "tx": "22 F1 86",
+      "rx": "62 F1 86 02"
+    },
+    {
+      "t_s": 0.004,
+      "label": "0x22 0200 status DID",
+      "tx": "22 02 00",
+      "rx": "7F 22 72"
+    },
+    {
+      "t_s": 0.005,
+      "label": "0x27 01 request seed",
+      "tx": "27 01",
+      "rx": "67 01 5E E9 79 B1"
+    },
+    {
+      "t_s": 0.007,
+      "label": "0x27 02 send key",
+      "tx": "27 02 44 A5 84 36",
+      "rx": "67 02"
+    },
+    {
+      "t_s": 0.009,
+      "label": "0x34 request download (11-byte, ISO-TP multi-frame)",
+      "tx": "34 00 44 08 01 00 00 00 00 AD 60",
+      "rx": "7F 34 22"
+    },
+    {
+      "t_s": 0.012,
+      "label": "0x22 0200 status DID again",
+      "tx": "22 02 00",
+      "rx": "7F 22 72"
+    }
+  ]
+}

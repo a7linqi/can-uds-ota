@@ -12,7 +12,7 @@ import sys
 import time
 from pathlib import Path
 
-CORE_TOOLS = Path(r"D:\Project\Can\ota-core\tools")
+CORE_TOOLS = Path(r"D:\Project\Can-learning\ota-core\tools")  # live repo; D:\Project\Can\ota-core is a stale snapshot
 sys.path.insert(0, str(CORE_TOOLS))
 
 from pc.transport import SimTransport, PythonCanTransport, Frame, TransportError  # noqa: E402

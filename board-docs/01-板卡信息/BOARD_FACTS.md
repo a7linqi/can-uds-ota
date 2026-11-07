@@ -82,7 +82,7 @@
 - EEPROM 完整型号与页长（24C02 的页长可能是 8/16/32）
 - 供电入口与整板供电路径
 - CAN 收发器型号、RX/TX 引脚跳线、终端电阻
-- 是否有 USB-CAN 适配器（枚举未见）
+- USB-CAN 适配器（2026-11-07 已到货并枚举 OK）：UTC-T01 / `PCAN-USB`，VID `0C72:000C`，PEAK 驱动 4.4.0.16619 + `PCANBasic.dll` 4.6.2.753；已在真实总线上跑通只读 UDS 诊断，证据见 `stages/board-lab/evidence/can/`
 - 板载日志串口（CH340 未在主机枚举，`has_ch340_uart=false`）
 
 ## 主机环境

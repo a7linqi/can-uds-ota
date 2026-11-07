@@ -1,0 +1,61 @@
+{
+  "test": "ISO-TP multi-frame VIN read over real CAN",
+  "timestamp": "2026-11-07 15:36:15",
+  "bitrate": 500000,
+  "first_frame": "10 14 62 F1 90 4C 4F 54",
+  "consecutive_frames": [
+    "21 41 30 30 30 30 30 30",
+    "22 30 30 30 30 30 30 31"
+  ],
+  "assembled_payload": "62 F1 90 4C 4F 54 41 30 30 30 30 30 30 30 30 30 30 30 30 31",
+  "assembled_bytes": 20,
+  "positive_62_f190": true,
+  "status_did_frames": [
+    "03 7F 22 72"
+  ],
+  "status": "passed",
+  "events": [
+    {
+      "t_s": 0.0,
+      "dir": "tx",
+      "id": "0x7E0",
+      "data": "03 22 F1 90 00 00 00 00"
+    },
+    {
+      "t_s": 0.002,
+      "dir": "rx",
+      "id": "0x7E8",
+      "data": "10 14 62 F1 90 4C 4F 54"
+    },
+    {
+      "t_s": 0.642,
+      "dir": "tx",
+      "id": "0x7E0",
+      "data": "30 00 00 00 00 00 00 00"
+    },
+    {
+      "t_s": 0.645,
+      "dir": "rx",
+      "id": "0x7E8",
+      "data": "21 41 30 30 30 30 30 30"
+    },
+    {
+      "t_s": 0.645,
+      "dir": "rx",
+      "id": "0x7E8",
+      "data": "22 30 30 30 30 30 30 31"
+    },
+    {
+      "t_s": 1.846,
+      "dir": "tx",
+      "id": "0x7E0",
+      "data": "03 22 02 00 00 00 00 00"
+    },
+    {
+      "t_s": 1.848,
+      "dir": "rx",
+      "id": "0x7E8",
+      "data": "03 7F 22 72"
+    }
+  ]
+}

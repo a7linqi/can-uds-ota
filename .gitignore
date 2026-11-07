@@ -27,7 +27,11 @@ backups/
 **/extracted/
 
 # ---------- 大体积测试/模拟数据 ----------
-stages/board-lab/evidence/
+stages/board-lab/evidence/*
+# 真实 CAN 验收的小体积证据需入库（文档逐条引用）；其余大体积数据与 *.bin 备份仍忽略
+!stages/board-lab/evidence/can/
+!stages/board-lab/evidence/can/*.json
+!stages/board-lab/evidence/can/*.txt
 stages/board-lab-review/
 **/evidence/nor-sim*/
 **/evidence/*/pass1/

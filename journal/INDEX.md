@@ -4,6 +4,12 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-07 | 验证（实机/门控） | [NRC 0x72 是设计好的门控；真实 CAN 完整 OTA 只需换传输层](entries/2026-11-07-nrc-72-designed-gate-and-real-can-ota-assessment.md) | nrc-72, storage-trusted, seed-key, iso-tp, ota评估 | Y |
+| 2026-11-07 | 验证（实机/通信） | [真实 CAN 打通：ISO-TP 多帧 + UDS 0x22 通过；此前 BUSOFF 是判据自己的波特率 bug](entries/2026-11-07-real-can-uds-multiframe-passed-and-baudrate-probe-bug.md) | real-can, iso-tp, uds, VIN, pcan, 判据校验 | Y |
+| 2026-11-07 | 决策（推翻旧判断） | [开机横幅证明固件正常：断点收敛到 P5 一根跳线](entries/2026-11-07-boot-banner-clears-firmware-p5-last-link.md) | boot-banner, 500kbit/s, pclk1, P5, 调试器halt, 证据边界 | N |
+| 2026-11-07 | 决策（推翻旧判断） | [BUSOFF 判据的假阴性，以及「2.4 V 不等于板子收发器有电」](entries/2026-11-07-busoff-false-negative-and-5v-unverified.md) | busoff, 假阴性, CAN_GetStatus, 5V, bxCAN, 证据边界 | N |
+| 2026-11-07 | 排障（上位机） | [PcanView 占着通道，还留着 200 kbit/s 的旧配置](entries/2026-11-07-pcanview-holds-channel-and-200k-default.md) | pcan-view, 0x1400, 通道占用, 波特率, 证据边界 | N |
+| 2026-11-07 | 决策（推翻旧判断） | [推翻「PCAN 状态判据不可信」：状态要在发帧后从底层读](entries/2026-11-07-pcan-busoff-needs-post-send-status.md) | pcan, busoff, CAN_GetStatus, 物理层, python-can | N |
 | 2026-11-05 | 验证（实机/安全） | [RDP 才是信任锚：上锁之后，SWD 一个字节也读不出来](entries/2026-11-05-rdp-is-the-trust-anchor.md) | rdp, option-bytes, trust-anchor, swd, mass-erase | Y |
 | 2026-11-05 | 验证（实机） | [硬件看门狗第一次真的咬人：32.341 秒，然后把 sick 镜像回滚掉](entries/2026-11-05-hardware-watchdog-on-silicon.md) | iwdg, lsi 32.4 kHz, 32.341 s, trial rollback, sick 镜像 | Y |
 | 2026-11-05 | 缺陷（实机/红绿） | [EEPROM 偶发读失败：先造一个红探针，再谈修复有没有效](entries/2026-11-05-eeprom-stress-red-green.md) | i2c, eeprom, bus-clear, red probe, stress | Y |

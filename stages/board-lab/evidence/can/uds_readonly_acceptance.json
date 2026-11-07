@@ -1,0 +1,88 @@
+{
+  "test": "real CAN physical + ISO-TP + UDS 0x22 read-only acceptance",
+  "timestamp": "2026-11-07 15:46:15",
+  "adapter": "UTC-T01 / PCAN-USB (VID 0C72:000C), PCANBasic.dll 4.6.2.753",
+  "channel": "PCAN_USBBUS1",
+  "bitrate": 500000,
+  "board": "ATK Explorer STM32F407ZGT6, P5 jumper on CAN side",
+  "firmware": "explorer_ZG_diagnostics_READONLY.bin (original, no probe)",
+  "request_ids": [
+    "0x7E0"
+  ],
+  "response_ids": [
+    "0x7E8"
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "did": "0xF190",
+      "rx": [
+        "10 14 62 F1 90 4C 4F 54"
+      ]
+    },
+    {
+      "round": 2,
+      "did": "0xF190",
+      "rx": []
+    },
+    {
+      "round": 3,
+      "did": "0xF190",
+      "rx": [
+        "10 14 62 F1 90 4C 4F 54"
+      ]
+    },
+    {
+      "round": 4,
+      "did": "0x0200",
+      "rx": []
+    }
+  ],
+  "rx_7e8_frames": 2,
+  "positive_uds_responses": 2,
+  "status": "passed",
+  "events": [
+    {
+      "t_s": 0.066,
+      "dir": "tx",
+      "id": "0x7E0",
+      "dlc": 8,
+      "data": "03 22 F1 90 00 00 00 00"
+    },
+    {
+      "t_s": 0.067,
+      "dir": "rx",
+      "id": "0x7E8",
+      "dlc": 8,
+      "data": "10 14 62 F1 90 4C 4F 54"
+    },
+    {
+      "t_s": 0.807,
+      "dir": "tx",
+      "id": "0x7E0",
+      "dlc": 8,
+      "data": "03 22 F1 90 00 00 00 00"
+    },
+    {
+      "t_s": 1.541,
+      "dir": "tx",
+      "id": "0x7E0",
+      "dlc": 8,
+      "data": "03 22 F1 90 00 00 00 00"
+    },
+    {
+      "t_s": 1.543,
+      "dir": "rx",
+      "id": "0x7E8",
+      "dlc": 8,
+      "data": "10 14 62 F1 90 4C 4F 54"
+    },
+    {
+      "t_s": 2.279,
+      "dir": "tx",
+      "id": "0x7E0",
+      "dlc": 8,
+      "data": "03 22 02 00 00 00 00 00"
+    }
+  ]
+}
