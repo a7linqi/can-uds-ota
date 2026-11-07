@@ -100,7 +100,7 @@
 
 ## 诚实的边界
 
-- 真实 CAN 总线（USB-CAN 到货，2026-11-07 实机打通）：PCAN-USB 500 kbit/s、`0x7E0`/`0x7E8`，完成 UDS `0x22` 只读验收与 **ISO-TP 多帧 VIN 读取**（首帧 `10 14` → 流控 `30 00 00` → 连续帧 `21`/`22`，拼出 20 B = `62 F1 90` + 17 位 VIN `LOTA0000000000001`，`status=passed`）。证据 `stages/board-lab/evidence/can/uds_readonly_acceptance.json`、`uds_multiframe_evidence.json`。**边界**：当前是只读诊断固件（`OTA_ENABLE_FLASHING=0`），真实 CAN 上的 `0x34/0x36/0x37/0x31/0x11` 完整 OTA 未验证；`0x22 0200` 回 NRC `0x72` 已定位为只读构建的**设计门控**（`STORAGE_TRUSTED=0` → `storage_ready=0` → `metadata_load` 失败），非缺陷，证据 `stages/board-lab/evidence/can/nrc_72_gate_evidence.json`；真实 CAN 完整 OTA 的改动清单见 `stages/board-lab/REAL_CAN_OTA_ASSESSMENT.md`。CAN-over-UART 台架与 bxCAN 静默回环（16 帧）仍是此前阶段的证据。
+- 真实 CAN 总线（USB-CAN 到货，2026-11-07 实机打通）：PCAN-USB 500 kbit/s、`0x7E0`/`0x7E8`，完成 UDS `0x22` 只读验收与 **ISO-TP 多帧 VIN 读取**（首帧 `10 14` → 流控 `30 00 00` → 连续帧 `21`/`22`，拼出 20 B = `62 F1 90` + 17 位 VIN `LOTA0000000000001`，`status=passed`）。证据 `stages/board-lab/evidence/can/uds_readonly_acceptance.json`、`uds_multiframe_evidence.json`。**边界**：当前是只读诊断固件（`OTA_ENABLE_FLASHING=0`），真实 CAN 上的 `0x34/0x36/0x37/0x31/0x11` 完整 OTA 未验证；`0x22 0200` 回 NRC `0x72` 已定位为只读构建的**设计门控**（`STORAGE_TRUSTED=0` → `storage_ready=0` → `metadata_load` 失败），非缺陷，证据 `stages/board-lab/evidence/can/nrc_72_gate_evidence.json`；真实 CAN 完整 OTA 的改动清单见 `stages/board-lab/REAL_CAN_OTA_ASSESSMENT.md`。CAN-over-UART 台架与 bxCAN 静默回环（16 帧）仍是此前阶段的证据。这一轮遇到的所有坑、当时的误判、根因与解决方式，集中整理在 `board-docs/05-工具与命令/CAN台架-排障实录.md`。
 - 演示密钥，不是量产密钥；无 WRP、无 OTP 版本计数器、无故障注入防护。
 - `hardware_verified=false` / `keil_target_linked=false` 是机器可读矩阵字段：
   Keil ARMASM 在本机因 DLL 重定位错误无法启动，改用 64 位 GNU Arm GCC 链接；
