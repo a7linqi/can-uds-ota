@@ -17,7 +17,7 @@
 ### 先建立共同基线
 
 - 在同一台电脑打开 `D:\Project\Can`，先读本文件，再按第 6 节阅读工程入口、当前状态、BSP 说明与验证记录。源码和可复现证据优先于旧聊天中的进度百分比；遇到冲突应指出并核对。
-- 当前核心、主机验证、四套 GNU 只读固件构建、升级包签名（Ed25519）、外部 NOR 的真实擦写、完整 OTA 安装链路（含安全启动与 TRIAL 回滚）、三种切点的真实断电、硬件 IWDG（实测 32.341 s，含看门狗驱动的 TRIAL 回滚）、EEPROM 总线锁死的红绿对照、以及 RDP 信任锚（RDP1 下 SWD 读不出固件）都已完成并留有证据；**真实 CAN 总线的只读诊断（物理层 + ISO-TP 多帧 + UDS 0x22）也已于 2026-11-07 实机打通**（PCAN-USB 500 kbit/s，VIN 20 B 载荷完整读回，证据 `stages/board-lab/evidence/can/`）。未完成的只剩：真实 CAN 上的完整 OTA（`0x34…0x37` → 安装，当前只读固件 `OTA_ENABLE_FLASHING=0`）、OTP 单调版本计数器（挡降级重放）。**简历与面试材料见根目录 `PROJECT_SUMMARY.md`**。不要从早期 Python demo 或 236 项检查版本重新开始。
+- 当前核心、主机验证、四套 GNU 只读固件构建、升级包签名（Ed25519）、外部 NOR 的真实擦写、完整 OTA 安装链路（含安全启动与 TRIAL 回滚）、三种切点的真实断电、硬件 IWDG（实测 32.341 s，含看门狗驱动的 TRIAL 回滚）、EEPROM 总线锁死的红绿对照、以及 RDP 信任锚（RDP1 下 SWD 读不出固件）都已完成并留有证据；**真实 CAN 总线也已于 2026-11-09 完整打通**：11-07 先打通只读诊断（物理层 + ISO-TP 多帧 + UDS `0x22`），11-09 在总线上跑通完整 OTA（v24 签名包、89 个 `0x36` 块、18.552 s、复位安装 + TRIAL 确认、内部 Flash 读回逐字节相同），证据 `stages/board-lab/evidence/can/real_can_ota_summary.json`，逐坑排障见 `board-docs/05-工具与命令/CAN台架-排障实录.md`。未完成的只剩 OTP 单调版本计数器（挡降级重放）、真实 CAN 上的断电恢复、总线负载/错误帧统计、长时间稳定性、从运行中 App 经 CAN 发起 OTA。**简历与面试材料见根目录 `PROJECT_SUMMARY.md`**。不要从早期 Python demo 或 236 项检查版本重新开始。
 - 修改前保留可回退基线；已有 `deliverables/ota-core-v0.12.zip`。若使用 Git，可在分支上推进；同一份工作目录同一时间只由一个 harness 修改，另一套用于只读审查。不要覆盖用户或其他工具尚未交接的改动。
 - 不要用“软件 90%”替代交付清单。对每个模块分别说明：实现状态、模型验证状态、目标构建状态、实机验证状态。
 
@@ -233,14 +233,14 @@ python tools/package_project.py --include-firmware --output "工程目录外的�
 | 完整 OTA（`0x34…0x37` → 安装） | **已做（2026-11-05）**：合法签名包完整链路（`34/36/37` 下发验签 → 备份 → 擦装 960 KiB → TRIAL → 跳转 → App 确认回 IDLE）在实物走通；同板 v8→v11、v17、v19 连续升级，内部读回 SHA256 与构建产物逐字节相同 |
 | 真实断电 | **已做（2026-11-05，三种切点）**：① 空闲态（16.5 s 全 USB 消失，恢复后逐字段相同）；② 下载中途（9690/44920 B 处拔电，恢复跳回原固件且立刻能重升）；③ **安装中途**（`11 01` 后安装窗口第 3~4 s 拔电，板子无人干预自己重做安装，终态带着正确凭证跑在断电时正在装的 v19 上）。证据 `stages/board-lab/POWER_CUT_EVIDENCE.md`。断电判据是串口句柄死亡 + 时间线，无 0 V 电压实测 |
 | 硬件 IWDG | **已做（2026-11-05 夜）**：实测超时 32.341 s（LSI≈32.4 kHz），正常 OTA 零误咬，sick 镜像三次咬合后 8.71 s 回滚到 v20。见 `stages/board-lab/WATCHDOG_EVIDENCE.md` |
-| 真实 CAN 总线 | **已做（2026-11-07，只读诊断）**：物理层 + ISO-TP 多帧 + UDS `0x22`。首帧 `10 14 62 F1 90 4C 4F 54` → 流控 `30 00 00` → 连续帧 `21`/`22`，拼出 20 B = `62 F1 90` + VIN `LOTA0000000000001`；只读验收 `status=passed`。证据 `stages/board-lab/evidence/can/uds_multiframe_evidence.json`。**未做**：真实 CAN 上的完整 OTA（`0x34…0x37`→安装，改动清单与工作量评估见 `stages/board-lab/REAL_CAN_OTA_ASSESSMENT.md`）、总线负载/错误帧统计、长时间稳定性。`0x22 0200` 回 NRC `0x72` 已定位为只读构建 `STORAGE_TRUSTED=0` 的设计门控（非缺陷），证据 `stages/board-lab/evidence/can/nrc_72_gate_evidence.json` 与复现脚本 `host/can_gate_probe.py`。静默内部回环 2026-11-02 已跑过（16 帧/stage=3） |
+| 真实 CAN 总线 | **已做（2026-11-07 只读诊断 + 2026-11-09 完整 OTA）**：物理层 + ISO-TP 多帧 + UDS `0x22`。VIN 首帧 `10 14 62 F1 90 4C 4F 54` → 流控 `30 00 00` → 连续帧 `21`/`22`，拼出 20 B = `62 F1 90` + VIN `LOTA0000000000001`；只读验收 `status=passed`。完整 OTA：v24 签名包 44920 B，89 个 `0x36` 块全部接受、18.552 s 零负响应，复位后安装 + TRIAL 确认，SWD 读回 44824 B 逐字节相同，96 B 凭证一致，终态 `IDLE/application/v24`。证据 `stages/board-lab/evidence/can/real_can_ota_summary.json`、`can-ota-01.jsonl`、`uds_multiframe_evidence.json`；执行清单 `stages/board-lab/REAL_CAN_OTA_RUNBOOK.md`。**未做**：真实 CAN 上的断电恢复、总线负载/错误帧统计、长时间稳定性、从运行中 App 经 CAN 发起 OTA（App 只保留 UART 诊断端点）。`0x22 0200` 回 NRC `0x72` 已定位为只读构建 `STORAGE_TRUSTED=0` 的设计门控（非缺陷），证据 `stages/board-lab/evidence/can/nrc_72_gate_evidence.json` 与复现脚本 `host/can_gate_probe.py`。静默内部回环 2026-11-02 已跑过（16 帧/stage=3） |
 
 接下来的实物步骤（1–3、5 已完成，剩 4 和阶段 D 的安装验证）：
 
 1. ~~核对 PCB、MCU 完整型号和实际 Flash 容量，记录实际 NOR/EEPROM 型号~~ **已完成**，见 `stages/board-lab/BOARD_FACTS.md`
 2. ~~首次下载前备份内部 Flash~~ **已完成**（两遍一致）
 3. ~~按容量选 ZG/ZE 回环固件，看串口/LED/16 帧比较~~ **已完成**（16 帧全通，三次复位复测）
-4. ~~对照实际版本核对 CAN 跳线、终端及接线，运行只读诊断固件，用 USB-CAN 读取 UDS 版本和状态~~ **已完成（2026-11-07）**：`0x22 F190` 多帧 VIN 读取通过；`0x22 0200` 回 NRC `0x72` 已定位为 `STORAGE_TRUSTED=0` 的设计门控（非缺陷，证据 `nrc_72_gate_evidence.json`）。后续可推进真实 CAN 上的完整 OTA（评估见 `REAL_CAN_OTA_ASSESSMENT.md`）；终端电阻 160 Ω（拨码已确认在 `120R`）下链路稳定通过，偏差非阻塞项，见 `CAN台架-接线与验证.md` 第 8 节。
+4. ~~对照实际版本核对 CAN 跳线、终端及接线，运行只读诊断固件，用 USB-CAN 读取 UDS 版本和状态~~ **已完成（2026-11-07）**：`0x22 F190` 多帧 VIN 读取通过；`0x22 0200` 回 NRC `0x72` 已定位为 `STORAGE_TRUSTED=0` 的设计门控（非缺陷，证据 `nrc_72_gate_evidence.json`）。后续可推进真实 CAN 上的断电恢复；终端电阻 160 Ω（拨码已确认在 `120R`）下完整 OTA 稳定通过，偏差非阻塞项，见 `CAN台架-接线与验证.md` 第 8 节与 `REAL_CAN_OTA_RUNBOOK.md` 第 12 节。
 5. ~~NOR/EEPROM 原始数据备份~~ **已完成**；写向驱动已在实机走通，整片 512 块演练 2026-11-05 已 512/512 跑完（器件 CRC = 金标），产品 UDS 路径也完成了真实擦写与定向恢复。下一步是完整签名包 → `0x31` → `0x11`。
 6. 之后才回填实测简历数字，以及推进签名和其他扩展。
 

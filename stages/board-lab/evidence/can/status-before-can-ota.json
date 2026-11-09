@@ -1,0 +1,23 @@
+{
+  "active_version": 23,
+  "pending_version": 0,
+  "min_version": 23,
+  "active_size": 45304,
+  "pending_size": 0,
+  "active_crc32": 2647647439,
+  "pending_crc32": 0,
+  "metadata_sequence": 253,
+  "flash_bytes": 1048576,
+  "metadata_valid": true,
+  "state": 0,
+  "boot_attempts": 0,
+  "state_name": "IDLE",
+  "metadata_only": true,
+  "record_bytes": 44,
+  "programming_allowed": true,
+  "job_error": false,
+  "requests_dropped": 0,
+  "role": "loader",
+  "service_deadline_misses": 0,
+  "backend": "python-can"
+}

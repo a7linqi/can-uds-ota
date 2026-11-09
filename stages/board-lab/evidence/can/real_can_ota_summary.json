@@ -1,0 +1,69 @@
+{
+  "title": "真实 CAN 总线上的完整 OTA 首次实机通过",
+  "date": "2026-11-09",
+  "status": "passed",
+  "hardware": {
+    "adapter": "UTC-T01 / PCAN-USB compatible, VID_0C72:000C, PCAN_USBBUS1, 500 kbit/s, baud constant 0x1C",
+    "board": "STM32F407ZG (device_id 0x413), 1 MiB internal flash",
+    "supply": "board power switch ON; ST-Link target voltage 3.24 V; USB_232 enumerated as COM3; CANH/CANL/GND, 120R dip switch",
+    "note": "the 22:00 attempt failed because the board power switch was OFF (2.87 V parasitic supply, no CH340); switching it on restored the link without any other change"
+  },
+  "firmware": {
+    "loader": "build-temp/stage-d-can/loader/loader.bin, 48172 B, sha256 0f14d783e2154d1e..., CAN diagnostics + OTA_ENABLE_FLASHING=1 + STORAGE_TRUSTED=1",
+    "app_payload": "build-temp/stage-d-can/app/app.bin, 44824 B, sha256 47f604c135166a0d...",
+    "package": "build-temp/stage-d/pkgs/app_v24_can.img2, 44920 B, version 24, signed Ed25519, sha256 01c9650129cb6653...",
+    "version_reason": "EEPROM metadata had active_version=23 / min_version=23, so 0x37 requires version > 23; a fresh v24 package was generated with make_image.py --version 24 --sign (the prebuilt v14 packages would have been rejected with 7F 37 31)",
+    "signature": "independently verified with pure-Python Ed25519 against the demo public key: OK. uds_tool inspect reports signature_verified=false because inspect_package hardcodes that field; the MCU verifies the signature itself."
+  },
+  "boot_banner": {
+    "before_flash": "UPDATE-CAPABLE build / update engine ENABLED / installed app failed its CRC or vectors / staying in the loader / loader diagnostics: request 7E0, response 7E8",
+    "after_reset": "loader: handing off to the app at 08010000 / app at 08010000: awaiting real health checks",
+    "file": "boot_banner_20261109_can_ota.txt"
+  },
+  "status_before": {
+    "active_version": 23, "min_version": 23, "state_name": "IDLE", "role": "loader",
+    "programming_allowed": true, "metadata_sequence": 253,
+    "file": "status-before-can-ota.json"
+  },
+  "transfer": {
+    "log": "can-ota-01.jsonl",
+    "events": 296,
+    "request_started": 96,
+    "block_accepted": 89,
+    "negative_or_error_events": 0,
+    "elapsed_s": 18.552,
+    "phase_34_erase_s": 14.197,
+    "phase_36_blocks_s": 3.757,
+    "phase_37_s": 0.321,
+    "phase_31_s": 0.269,
+    "reset_service": "0x11 sent at the end; installation happens in boot_select() after reset",
+    "tester_present": "none sent; S3 is an idle timeout and synchronous jobs do not count (uds.c:595/626, stm32_diag.c:38/175)",
+    "watchdog": "OTA_ENABLE_WATCHDOG=0 for this build; 18.552 s is well under the previously measured 32.341 s IWDG timeout"
+  },
+  "installation": {
+    "swd_readback": "installed-app.bin, 44824 B, sha256 47f604c135166a0de1f87a392c88447a9315d7cfc3e6a8dd05f31707529fbc5c",
+    "payload_match": "byte-for-byte equal to app_v24_can.img2 payload (32 B header stripped, 64 B signature stripped)",
+    "crc32": "0xD6B888DB",
+    "ticket": "installed-ticket.bin, 96 B at 0x080FFFA0: 32 B header byte-equal to package header, 64 B signature byte-equal to package signature ec40408ae63374c6...",
+    "ticket_header": {"magic": "0x32474D49", "version": 24, "size": 44824, "crc32": "0xD6B888DB", "address": "0x08010000", "flags": "0x1"}
+  },
+  "status_final": {
+    "active_version": 24, "min_version": 24, "active_size": 44824,
+    "active_crc32": 3602417883, "state_name": "IDLE", "boot_attempts": 0,
+    "role": "application", "metadata_sequence": 260, "metadata_valid": true,
+    "job_error": false, "requests_dropped": 0, "service_deadline_misses": 0,
+    "file": "status-final-can-ota.json",
+    "transport_note": "read via the UART bench (--backend uart --serial-port COM3) because the application intentionally has no CAN diagnostic endpoint (firmware/app/main.c:22 is a no-op); CAN status timeout after handoff is expected design behaviour, not a failure"
+  },
+  "boundary": {
+    "verified": "real CAN physical layer + ISO-TP multi-frame + UDS 0x10/0x27/0x34/0x36/0x37/0x31/0x11 + post-reset install + TRIAL confirmation + byte-exact readback + signed ticket",
+    "not_verified": [
+      "power-cut recovery on the real CAN bus (only verified on the UART bench)",
+      "fault injection / bus-off recovery under load",
+      "long-duration stability and bus load statistics",
+      "OTP monotonic version counter, WRP/RDP2",
+      "full OTA from the running application over CAN (this run started from the loader; the App keeps only a UART diagnostic endpoint)"
+    ],
+    "note": "the earlier residual item 'real CAN full OTA' is now closed for the loader-started path; keep the above boundaries when writing resumes"
+  }
+}

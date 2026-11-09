@@ -1,0 +1,46 @@
+真实 CAN 完整 OTA 实机开机横幅（2026-11-09，COM3 @ 115200, dtr=False rts=False）
+电源开关打开后 ST-Link 目标电压 3.24 V；电源开关关闭时是 2.87 V / CH340 不在线 / CAN 零回帧。
+
+========== A. 烧可写 CAN loader 之后、flash 之前（616 B） ==========
+ATK Explorer reference pins; UPDATE-CAPABLE build
+CAN: normal physical 500 kbit/s
+device_id=0x00000413
+flash_bytes=0x00100000
+hclk_hz=0x0A037A00        -> 168 000 000 Hz
+pclk1_hz=0x0280DE80       ->  42 000 000 Hz
+jedec_id=0x00EF4018
+NOR RDID read; fitted chip profile unconfirmed
+EEPROM 256-byte read complete
+eeprom_crc32=0x316AB2D3
+nor_status=0x00000000
+nor_bytes=0x01000000
+nor_read_crc32=0x6B027918
+NOR driver probe+dry read ok
+NOR program/erase hooks compiled in, update engine ENABLED
+loader: selecting boot target
+loader: installed app failed its CRC or vectors
+loader: staying in the loader
+loader diagnostics: request 7E0, response 7E8
+
+判据：update engine ENABLED（可写变体）；App 区被 -e all 擦空所以 CRC/vectors 失败 → 留在 loader 等诊断，正是完整 OTA 需要的起点。
+
+========== B. flash v24 + 0x11 复位、安装完成后的下一次复位（1043 B） ==========
+ATK Explorer reference pins; UPDATE-CAPABLE build
+... (同上 NOR/EEPROM 健康探针，nor_read_crc32=0xB8294E61 已变为下载后的镜像)
+NOR program/erase hooks compiled in, update engine ENABLED
+loader: selecting boot target
+loader: handing off to the app at 08010000
+ATK Explorer reference pins; update engine disabled
+CAN: normal physical 500 kbit/s
+... (App 侧 NOR/EEPROM 探针)
+NOR program/erase hooks compiled in, update engine still gated
+app at 08010000: awaiting real health checks
+
+判据：boot_select() 从「留在 loader」变成「交棒 App」，且 App 打印健康检查横幅 → TRIAL 已被
+boot_accept_app_health() 确认。随后用 UART 后端读状态 DID 得到 IDLE/application/v24（见
+status-final-can-ota.json）。App 无 CAN 诊断端点（firmware/app/main.c:22 空实现），所以
+复位后 CAN 上的 status 超时是设计行为，不是失败。
+
+========== 边界 ==========
+本文件只记录开机横幅，不替代逐帧传输日志（can-ota-01.jsonl）、SWD 读回比对
+（installed-app.bin / installed-ticket.bin）与状态机终态（status-final-can-ota.json）。

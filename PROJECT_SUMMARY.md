@@ -72,6 +72,10 @@
 > **CAN/UDS 车载诊断与可靠固件更新平台**（STM32F407，C，约 4.9 k 行 + 3.5 k 行测试）
 > - 设计并实现"固定 App 地址 + 外部新旧镜像 + 双副本事务元数据"的升级方案，
 >   支持 `0x34/0x36/0x37` 下载、Ed25519 验签、TRIAL 试启动与自动回滚；
+> - 在真实 CAN 总线（PCAN-USB + STM32F407，500 kbit/s）上跑通完整 UDS 固件升级：
+>   `0x10 02` → Seed/Key → `0x34` → 89 个 `0x36` 块 → `0x37` 验签 → `0x31` → `0x11`，
+>   18.55 s 零负响应；复位后自动安装并通过 TRIAL 确认，内部 Flash 读回 44824 B
+>   与构建产物逐字节相同，96 B 签名凭证核对一致，终态 `IDLE/application/v24`；
 > - 用真实拔电实验验证三种中断点（空闲 / 下载中 / 安装中）：下载中断保住旧固件、
 >   安装中断由 Bootloader 自行重做安装，均无需人工干预；
 > - 实现 App 区尾部 96 B 签名凭证（与镜像同一次擦除、不可错配），伪造镜像即使
@@ -100,7 +104,7 @@
 
 ## 诚实的边界
 
-- 真实 CAN 总线（USB-CAN 到货，2026-11-07 实机打通）：PCAN-USB 500 kbit/s、`0x7E0`/`0x7E8`，完成 UDS `0x22` 只读验收与 **ISO-TP 多帧 VIN 读取**（首帧 `10 14` → 流控 `30 00 00` → 连续帧 `21`/`22`，拼出 20 B = `62 F1 90` + 17 位 VIN `LOTA0000000000001`，`status=passed`）。证据 `stages/board-lab/evidence/can/uds_readonly_acceptance.json`、`uds_multiframe_evidence.json`。**边界**：当前是只读诊断固件（`OTA_ENABLE_FLASHING=0`），真实 CAN 上的 `0x34/0x36/0x37/0x31/0x11` 完整 OTA 未验证；`0x22 0200` 回 NRC `0x72` 已定位为只读构建的**设计门控**（`STORAGE_TRUSTED=0` → `storage_ready=0` → `metadata_load` 失败），非缺陷，证据 `stages/board-lab/evidence/can/nrc_72_gate_evidence.json`；真实 CAN 完整 OTA 的改动清单见 `stages/board-lab/REAL_CAN_OTA_ASSESSMENT.md`。CAN-over-UART 台架与 bxCAN 静默回环（16 帧）仍是此前阶段的证据。这一轮遇到的所有坑、当时的误判、根因与解决方式，集中整理在 `board-docs/05-工具与命令/CAN台架-排障实录.md`。
+- 真实 CAN 总线（USB-CAN 到货，2026-11-07 打通只读诊断，**2026-11-09 打通完整 OTA**）：PCAN-USB 500 kbit/s、`0x7E0`/`0x7E8`。只读段：UDS `0x22` 验收与 **ISO-TP 多帧 VIN 读取**（首帧 `10 14` → 流控 `30 00 00` → 连续帧 `21`/`22`，拼出 20 B = `62 F1 90` + 17 位 VIN `LOTA0000000000001`，`status=passed`）。**完整 OTA**：v24 Ed25519 签名包 44920 B，`0x10 02`→Seed/Key→`0x34`（擦除 14.20 s）→**89 个 `0x36` 块**→`0x37` 验签→`0x31`→`0x11`，**18.552 s、零负响应**；复位后自动安装、TRIAL 确认、跳转 App；SWD 读回 44824 B 与构建产物**逐字节相同**（sha256 `47f604c1…`、crc32 `0xD6B888DB`），96 B 签名凭证核对一致，终态 `IDLE/application/v24/boot_attempts=0`。证据 `stages/board-lab/evidence/can/real_can_ota_summary.json`、`can-ota-01.jsonl`、`installed-app.bin`、`installed-ticket.bin`、`status-before-can-ota.json`、`status-final-can-ota.json`、`boot_banner_20261109_can_ota.txt`。**边界**：`0x22 0200` 回 NRC `0x72` 是只读构建的**设计门控**（`STORAGE_TRUSTED=0`），非缺陷；真实 CAN 上的断电恢复、总线负载/错误帧、长时间稳定性、从运行中 App 经 CAN 发起 OTA（App 只保留 UART 诊断端点）仍未验证。CAN-over-UART 台架与 bxCAN 静默回环（16 帧）仍是此前阶段的证据。这一轮遇到的所有坑、当时的误判、根因与解决方式，集中整理在 `board-docs/05-工具与命令/CAN台架-排障实录.md`；完整 OTA 的执行清单见 `stages/board-lab/REAL_CAN_OTA_RUNBOOK.md`。
 - 演示密钥，不是量产密钥；无 WRP、无 OTP 版本计数器、无故障注入防护。
 - `hardware_verified=false` / `keil_target_linked=false` 是机器可读矩阵字段：
   Keil ARMASM 在本机因 DLL 重定位错误无法启动，改用 64 位 GNU Arm GCC 链接；

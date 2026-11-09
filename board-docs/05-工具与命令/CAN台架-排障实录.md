@@ -1,6 +1,6 @@
 # 真实 CAN 台架排障实录：现象、根因与解决方式（2026-11-07；2026-11-09 补第 7 节）
 
-> 2026-11-09 补记：首次执行真实 CAN 完整 OTA 时链路未建立，A/B 对照排除固件。新增第 7 节，含「失败探针覆写历史证据」和「`0x0` 不是 ACK 证据」两个坑。证据：`stages/board-lab/evidence/can/bringup_20261109_ab.json`。
+> 2026-11-09 补记：首次执行真实 CAN 完整 OTA 时链路未建立，A/B 对照排除固件（第 7 节）；**当晚打开板子电源开关后链路恢复，完整 OTA 已实机通过**（第 8 节）。证据：`stages/board-lab/evidence/can/bringup_20261109_ab.json`、`real_can_ota_summary.json`。
 
 > 配套阅读：`CAN台架-接线与验证.md` 第 8 节（验收记录）、`stages/board-lab/REAL_CAN_OTA_ASSESSMENT.md`（后续完整 OTA 评估）、`journal/entries/2026-11-07-*.md`（六条逐轮记录）。
 > 本文把这一轮遇到的**每一个坑、当时为什么判断错、最后怎么解决**集中到一处，便于复现与面试复述。
@@ -8,7 +8,7 @@
 ## 0. 结论：通了，范围要写准
 
 **通了。** 范围是 **真实 CAN 物理层 + ISO-TP 多帧 + UDS `0x22` 只读诊断**（含 Seed/Key 解锁与门控遥测）。
-**没有通**的是真实 CAN 上的完整 OTA（`0x34/0x36/0x37/0x31/0x11` → 安装），那仍只在 UART 台架实机验证过。
+**没有通**的是真实 CAN 上的完整 OTA（`0x34/0x36/0x37/0x31/0x11` → 安装），那仍只在 UART 台架实机验证过。→ **2026-11-09 22:44 该项已补上**，见第 8 节。
 
 **最重要的一句话**：硬件、驱动、固件其实一直具备通信条件；让链路「看起来不通」的是**自写探针把 `PCAN_BAUD_500K` 写成 `0x001C0000`**（正确值 `0x1C`），把适配器设成了无效波特率，于是它自己 bus-off，制造了整轮假的 `BUSOFF 0x10`。改成 `B.PCAN_BAUD_500K.value` 后，同一脚本立刻 `CAN_GetStatus = 0x0` 并收到 `0x7E8` 响应。
 
@@ -160,4 +160,20 @@ RX 0x7E8 22 30 30 30 30 30 30 31     连续帧 2
 
 **新增可复现脚本**（`stages/board-lab/host/`）：`can_ack_hard_probe.py`（50 帧 + 错误帧/回显 + 底层状态，用正确的 `PCAN_BAUD_500K.value`）、`can_watch_window.py`（45 s 被动监听 + 周期请求，区分「板子没启动」与「稍后开始应答」）。
 
-**证据边界**：真实 CAN 完整 OTA（`0x34…0x37` → 安装）**仍未验证**，本节不得写成通过。
+**证据边界（第 7 节写于当时）**：真实 CAN 完整 OTA（`0x34…0x37` → 安装）**当时仍未验证**；今晚更晚些时候已在同一次接线中补上，见第 8 节。本表保留当时的判断不改写。
+
+## 8. 2026-11-09 收口：打开电源开关后完整 OTA 通过
+
+| 现象 | 当时的误判 | 实测 / 根因 | 解决方式 |
+|---|---|---|---|
+| 第 7 节那次「三根线都接了」但链路零回帧、2.87 V、CH340 不在线 | 推断为 `USB_232` 接线或 5 V 轨问题 | **根因就是板子电源开关没开**。打开后 CH340 立刻枚举成 COM3、ST-Link 目标电压 3.24 V、横幅与只读验收全部恢复，`status=passed` | 以后接线自检第一条就量 **ST-Link 目标电压**：3.24 V = 正常，2.87 V = 供电不足/寄生供电。比量电阻、猜跳线都快 |
+| `uds_tool.py status` 显示 `active_version=23 / min_version=23`，想用现成的 v14 包 | 「v14 是准备好的包」 | `0x37` 要求 `version > min_version && > active_version`（`uds.c:429`），v14 会被 `7F 37 31` 拒；14 s 擦除白费 | 先 `status` 再选包；用 `make_image.py --version 24 --sign` 现场生成 |
+| `uds_tool.py inspect` 输出 `signature_verified: false` | 「包没签好，得重新打包」 | 该字段在 `inspect_package()` 里是**硬编码 False**，工具根本不验签；用纯 Python Ed25519 独立验 v24/v14 都是 `OK`，MCU 侧自己验签 | 反直觉的工具输出先读实现，别急着改产物 |
+| `0x11` 之后 CAN 上 `status` 超时 | 「安装失败了」 | `firmware/app/main.c:22` 的 `ota_bootloader_can_rx` 是**空实现**：App 只保留 UART 诊断用于交棒，CAN 上无人应答是设计行为 | 改 `--backend uart --serial-port COM3` 读状态 DID；该后端会主动把 DTR/RTS 拉低，不会复位板子 |
+| SWD `hotplug` 读不回 App 区（`Unable to get core ID`） | — | App 运行时调试器附着失败（历史坑复现） | 改 `mode=normal` 复位一次读取；不影响已写入的 Flash 内容 |
+
+**实测结果**：v24 签名包 44920 B，`0x10 02`→Seed/Key→`0x34`（擦除 14.197 s）→**89 个 `0x36` 块**（3.757 s）→`0x37`（0.321 s）→`0x31`（0.269 s）→`0x11`，**18.552 s、零负响应、296 个事件**；复位后 `loader: handing off to the app at 08010000` → App 健康检查横幅；SWD 读回 44824 B sha256 `47f604c1…` 与 payload **逐字节相同**，96 B 凭证头与签名均一致（`ec40408a…`）；终态 `IDLE/application/v24/boot_attempts=0/seq 260`。全程**没发 `3E 00`**，实测证实 11-09 白天「同步 job 不计时、无需保活」的源码结论。
+
+证据：`stages/board-lab/evidence/can/real_can_ota_summary.json`、`can-ota-01.jsonl`、`status-before-can-ota.json`、`status-final-can-ota.json`、`installed-app.bin`、`installed-ticket.bin`、`boot_banner_20261109_can_ota.txt`；执行清单 `stages/board-lab/REAL_CAN_OTA_RUNBOOK.md` 第 12 节；journal `2026-11-09-real-can-full-ota-passed.md`（可写简历 = Y）。
+
+**仍未验证**：真实 CAN 上的断电恢复、总线负载/错误帧、长时间稳定性、从运行中 App 经 CAN 发起 OTA、OTP 单调计数器、WRP/RDP2。

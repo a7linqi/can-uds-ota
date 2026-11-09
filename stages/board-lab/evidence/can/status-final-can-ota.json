@@ -1,0 +1,23 @@
+{
+  "active_version": 24,
+  "pending_version": 0,
+  "min_version": 24,
+  "active_size": 44824,
+  "pending_size": 0,
+  "active_crc32": 3602417883,
+  "pending_crc32": 0,
+  "metadata_sequence": 260,
+  "flash_bytes": 1048576,
+  "metadata_valid": true,
+  "state": 0,
+  "boot_attempts": 0,
+  "state_name": "IDLE",
+  "metadata_only": true,
+  "record_bytes": 44,
+  "programming_allowed": false,
+  "job_error": false,
+  "requests_dropped": 0,
+  "role": "application",
+  "service_deadline_misses": 0,
+  "backend": "USART1 bench"
+}

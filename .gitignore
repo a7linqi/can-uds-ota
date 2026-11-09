@@ -32,6 +32,10 @@ stages/board-lab/evidence/*
 !stages/board-lab/evidence/can/
 !stages/board-lab/evidence/can/*.json
 !stages/board-lab/evidence/can/*.txt
+!stages/board-lab/evidence/can/*.jsonl
+# 完整 OTA 的 SWD 读回物证（逐字节比对用），仅放行这两个具名文件；其余 *.bin 备份仍忽略
+!stages/board-lab/evidence/can/installed-app.bin
+!stages/board-lab/evidence/can/installed-ticket.bin
 stages/board-lab-review/
 **/evidence/nor-sim*/
 **/evidence/*/pass1/

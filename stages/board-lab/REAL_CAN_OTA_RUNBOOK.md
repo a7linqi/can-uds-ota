@@ -1,7 +1,7 @@
-# 真实 CAN 完整 OTA 验收 Runbook（2026-11-09 准备完成；首次接线执行受阻，见第 11 节）
+# 真实 CAN 完整 OTA 验收 Runbook（2026-11-09 实机通过，见第 12 节）
 
 > 配套：`REAL_CAN_OTA_ASSESSMENT.md`（改动清单/时序/风险）、`board-docs/05-工具与命令/CAN台架-排障实录.md`（历史坑）。
-> **状态**：不依赖硬件的准备工作已全部完成并实测；**第 4 步之后的硬件步骤未通过**——2026-11-09 晚首次接线时链路没建起来（`status` 超时），A/B 对照已排除固件，卡点回到板级供电与 `USB_232`。详见第 11 节与 `evidence/can/bringup_20261109_ab.json`。**真实 CAN 完整 OTA 仍未验证。**
+> **状态**：**2026-11-09 22:44 已在真实 CAN 上完整跑通 `0x34…0x37` → 安装 → TRIAL 确认**，`status=passed`，逐帧日志与 SWD 读回证据见 `evidence/can/real_can_ota_summary.json`。第 11 节记录当晚 22:00 首次接线失败（板子电源开关没开）的排查过程，第 12 节是成功那次的完整记录。
 
 ## 0. 已经备好的东西（不依赖硬件，均已实测）
 
@@ -125,7 +125,7 @@ python tools\uds_tool.py status --backend can --interface pcan --channel PCAN_US
 
 ## 10. 边界
 
-- 这份 runbook 是**执行清单**，不是已完成的验证；真实 CAN 完整 OTA 仍是「未验证」。
+- 这份 runbook 是**执行清单**；真实 CAN 完整 OTA 的核心路径已于 2026-11-09 实机通过（第 12 节）。下面是仍成立的边界。
 - 终端电阻实测 160 Ω、拨码已在 `120R`，历史多次验收稳定通过，不必先调成 60 Ω。
 - 真实 CAN 上的断电恢复（第 6 步之后拔 CAN 线/断电）是下一项，本轮先不合并。
 - 三个不可逆操作（RDP2 / OTP 单调计数器 / WRP）**先不要动**。
@@ -151,3 +151,32 @@ python tools\uds_tool.py status --backend can --interface pcan --channel PCAN_US
 - `CAN_GetStatus = 0x0` / `bus.state = ACTIVE` **不是 ACK 证据**，兼容适配器不上报 ACK 错误；不能以「状态 OK」当作链路已建立。
 
 板子与两仓库已完整回滚：探针残留 0、MDK 恢复 `--uart` 版、diagnostics bin 恢复 `8a383388…`、板子烧回原版只读固件、工作树干净。
+
+## 12. 成功执行记录（2026-11-09 22:41–22:44，`status=passed`）
+
+**根因**：第 11 节那次失败只是**板子电源开关没开**。打开后 `USB-SERIAL CH340 (COM3)` 立刻枚举、ST-Link 目标电压 **3.24 V**（关电时 2.87 V）、开机横幅恢复、只读验收 `status=passed`。**以后接线自检第一条就量 ST-Link 目标电压**，比量电阻、猜跳线都快。
+
+**执行序列**（全部在真实 CAN 上，除最后读状态与 SWD 读回）：
+
+| 步 | 命令 / 动作 | 结果 |
+|---|---|---|
+| 1 | `can_boot_log.py` | 511 B 横幅：`CAN: normal physical 500 kbit/s`、`NOR/EEPROM` 健康、`loader diagnostics: request 7E0, response 7E8` |
+| 2 | `can_uds_acceptance.py` | `status=passed`，`0x7E8 10 14 62 F1 90 4C 4F 54` |
+| 3 | 备份 loader/app 各 64 KiB；`-e all -w stage-d-can/loader/loader.bin 0x08000000 -v -rst` | 48172 B，校验通过；横幅 `UPDATE-CAPABLE build` / `update engine ENABLED` / `installed app failed its CRC or vectors` / `staying in the loader` |
+| 4 | `uds_tool.py status --backend can` | `active_version=23 / min_version=23 / IDLE / role=loader / programming_allowed=true / seq 253` |
+| 5 | `make_image.py app.bin app_v24_can.img2 --version 24 --sign` | 44920 B；**必须 > 23**，现成 v14 包会被 `7F 37 31` 拒 |
+| 6 | `uds_tool.py flash … --backend can --log can-ota-01.jsonl` | **89 个 `0x36` 块全部 `block_accepted`，296 事件，零负响应，18.552 s** |
+| 7 | `0x11` 复位后等 12 s | 横幅 `loader: handing off to the app at 08010000` → `app at 08010000: awaiting real health checks` |
+| 8 | SWD `mode=normal -u 0x08010000 0xAF18` / `0x080FFFA0 0x60` | 44824 B sha256 `47f604c1…` 与 v24 payload **逐字节相同**；96 B 凭证头与签名（`ec40408a…`）均一致 |
+| 9 | `uds_tool.py status --backend uart --serial-port COM3` | `IDLE / application / v24 / min_version=24 / size=44824 / crc32=0xD6B888DB / boot_attempts=0 / seq 260` |
+
+**时序**：`0x34` 擦除 14.197 s、89 块 `0x36` 3.757 s、`0x37` 0.321 s、`0x31` 0.269 s、`0x11` → 合计 **18.552 s**。全程**未发 `3E 00`**，实测证实「S3 是空闲超时、同步 job 不计时」；该变体 `OTA_ENABLE_WATCHDOG=0`，18.552 s 远小于 32.341 s 历史实测超时。
+
+**三个新坑**（详见排障实录第 8 节）：
+1. `inspect_package()` 的 `signature_verified` 是**硬编码 False**；用纯 Python Ed25519 独立验签才靠谱。
+2. `0x11` 后 CAN 上 `status` 超时是**设计行为**——`firmware/app/main.c:22` 的 CAN 回调是空实现，App 只保留 UART 诊断端点。
+3. SWD `hotplug` 在 App 运行时读不回 Flash（`Unable to get core ID`），需 `mode=normal` 复位一次。
+
+**证据清单**（`evidence/can/`）：`real_can_ota_summary.json`、`can-ota-01.jsonl`、`status-before-can-ota.json`、`status-after-can-ota.json`（超时，保留作边界说明）、`status-final-can-ota.json`、`installed-app.bin`、`installed-ticket.bin`、`boot_banner_20261109_can_ota.txt`。
+
+**仍未验证**：真实 CAN 上的断电恢复、总线负载/错误帧、长时间稳定性、从运行中 App 经 CAN 发起 OTA、OTP 单调计数器、WRP/RDP2。

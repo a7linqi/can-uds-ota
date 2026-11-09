@@ -1,0 +1,296 @@
+{"event": "package_preflight", "version": 24, "payload_bytes": 44824, "package_bytes": 44920, "load_address": "0x8010000", "payload_crc32": "D6B888DB", "package_sha256": "01c9650129cb6653eb615e9167835e97f99847d24fb87770ec3e74762a599dde", "signature_verified": false, "signed": true, "at": "2026-11-09T22:43:45.602566+08:00"}
+{"event": "request_started", "sid": "10", "bytes": 2, "at": "2026-11-09T22:43:45.603453+08:00"}
+{"event": "request_started", "sid": "27", "bytes": 2, "at": "2026-11-09T22:43:45.605178+08:00"}
+{"event": "request_started", "sid": "27", "bytes": 6, "at": "2026-11-09T22:43:45.606765+08:00"}
+{"event": "programming_unlocked", "p2_s": 0.05, "p2_star_s": 5.0, "security": "demo_seed_key", "at": "2026-11-09T22:43:45.608489+08:00"}
+{"event": "request_started", "sid": "34", "bytes": 11, "at": "2026-11-09T22:43:45.608692+08:00"}
+{"event": "pending", "sid": "34", "count": 1, "at": "2026-11-09T22:43:45.612189+08:00"}
+{"event": "pending", "sid": "34", "count": 2, "at": "2026-11-09T22:43:46.611838+08:00"}
+{"event": "pending", "sid": "34", "count": 3, "at": "2026-11-09T22:43:47.611413+08:00"}
+{"event": "pending", "sid": "34", "count": 4, "at": "2026-11-09T22:43:48.611350+08:00"}
+{"event": "pending", "sid": "34", "count": 5, "at": "2026-11-09T22:43:49.611344+08:00"}
+{"event": "pending", "sid": "34", "count": 6, "at": "2026-11-09T22:43:50.611561+08:00"}
+{"event": "pending", "sid": "34", "count": 7, "at": "2026-11-09T22:43:51.612051+08:00"}
+{"event": "pending", "sid": "34", "count": 8, "at": "2026-11-09T22:43:52.611216+08:00"}
+{"event": "pending", "sid": "34", "count": 9, "at": "2026-11-09T22:43:53.611490+08:00"}
+{"event": "pending", "sid": "34", "count": 10, "at": "2026-11-09T22:43:54.611820+08:00"}
+{"event": "pending", "sid": "34", "count": 11, "at": "2026-11-09T22:43:55.610990+08:00"}
+{"event": "pending", "sid": "34", "count": 12, "at": "2026-11-09T22:43:56.610837+08:00"}
+{"event": "pending", "sid": "34", "count": 13, "at": "2026-11-09T22:43:57.617934+08:00"}
+{"event": "pending", "sid": "34", "count": 14, "at": "2026-11-09T22:43:58.611743+08:00"}
+{"event": "pending", "sid": "34", "count": 15, "at": "2026-11-09T22:43:59.611718+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:43:59.805870+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:43:59.839044+08:00"}
+{"event": "block_accepted", "counter": 1, "offset": 0, "bytes": 510, "at": "2026-11-09T22:43:59.846252+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:43:59.846405+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:43:59.879440+08:00"}
+{"event": "block_accepted", "counter": 2, "offset": 510, "bytes": 510, "at": "2026-11-09T22:43:59.888473+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:43:59.888636+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:43:59.921507+08:00"}
+{"event": "block_accepted", "counter": 3, "offset": 1020, "bytes": 510, "at": "2026-11-09T22:43:59.931189+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:43:59.931249+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:43:59.964128+08:00"}
+{"event": "block_accepted", "counter": 4, "offset": 1530, "bytes": 510, "at": "2026-11-09T22:43:59.973146+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:43:59.973205+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.006517+08:00"}
+{"event": "block_accepted", "counter": 5, "offset": 2040, "bytes": 510, "at": "2026-11-09T22:44:00.015357+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.015515+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.049657+08:00"}
+{"event": "block_accepted", "counter": 6, "offset": 2550, "bytes": 510, "at": "2026-11-09T22:44:00.059254+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.059321+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.092846+08:00"}
+{"event": "block_accepted", "counter": 7, "offset": 3060, "bytes": 510, "at": "2026-11-09T22:44:00.102301+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.102385+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.135082+08:00"}
+{"event": "block_accepted", "counter": 8, "offset": 3570, "bytes": 510, "at": "2026-11-09T22:44:00.144170+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.144244+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.177660+08:00"}
+{"event": "block_accepted", "counter": 9, "offset": 4080, "bytes": 510, "at": "2026-11-09T22:44:00.187195+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.187290+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.220070+08:00"}
+{"event": "block_accepted", "counter": 10, "offset": 4590, "bytes": 510, "at": "2026-11-09T22:44:00.229163+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.229242+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.261921+08:00"}
+{"event": "block_accepted", "counter": 11, "offset": 5100, "bytes": 510, "at": "2026-11-09T22:44:00.271177+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.271264+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.304050+08:00"}
+{"event": "block_accepted", "counter": 12, "offset": 5610, "bytes": 510, "at": "2026-11-09T22:44:00.313144+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.313212+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.346500+08:00"}
+{"event": "block_accepted", "counter": 13, "offset": 6120, "bytes": 510, "at": "2026-11-09T22:44:00.355138+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.355224+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.388703+08:00"}
+{"event": "block_accepted", "counter": 14, "offset": 6630, "bytes": 510, "at": "2026-11-09T22:44:00.398141+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.398229+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.431906+08:00"}
+{"event": "block_accepted", "counter": 15, "offset": 7140, "bytes": 510, "at": "2026-11-09T22:44:00.441072+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.441141+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.474657+08:00"}
+{"event": "block_accepted", "counter": 16, "offset": 7650, "bytes": 510, "at": "2026-11-09T22:44:00.484134+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.484217+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.516817+08:00"}
+{"event": "block_accepted", "counter": 17, "offset": 8160, "bytes": 510, "at": "2026-11-09T22:44:00.526168+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.526238+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.559131+08:00"}
+{"event": "block_accepted", "counter": 18, "offset": 8670, "bytes": 510, "at": "2026-11-09T22:44:00.568053+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.568114+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.601034+08:00"}
+{"event": "block_accepted", "counter": 19, "offset": 9180, "bytes": 510, "at": "2026-11-09T22:44:00.610103+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.610162+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.642560+08:00"}
+{"event": "block_accepted", "counter": 20, "offset": 9690, "bytes": 510, "at": "2026-11-09T22:44:00.652142+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.652265+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.687124+08:00"}
+{"event": "block_accepted", "counter": 21, "offset": 10200, "bytes": 510, "at": "2026-11-09T22:44:00.696309+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.696415+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.729870+08:00"}
+{"event": "block_accepted", "counter": 22, "offset": 10710, "bytes": 510, "at": "2026-11-09T22:44:00.739140+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.739233+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.772246+08:00"}
+{"event": "block_accepted", "counter": 23, "offset": 11220, "bytes": 510, "at": "2026-11-09T22:44:00.781218+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.781388+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.813934+08:00"}
+{"event": "block_accepted", "counter": 24, "offset": 11730, "bytes": 510, "at": "2026-11-09T22:44:00.823213+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.823401+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.856053+08:00"}
+{"event": "block_accepted", "counter": 25, "offset": 12240, "bytes": 510, "at": "2026-11-09T22:44:00.865161+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.865243+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.897931+08:00"}
+{"event": "block_accepted", "counter": 26, "offset": 12750, "bytes": 510, "at": "2026-11-09T22:44:00.907202+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.907280+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.940489+08:00"}
+{"event": "block_accepted", "counter": 27, "offset": 13260, "bytes": 510, "at": "2026-11-09T22:44:00.950087+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.950174+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:00.982718+08:00"}
+{"event": "block_accepted", "counter": 28, "offset": 13770, "bytes": 510, "at": "2026-11-09T22:44:00.992133+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:00.992202+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.024561+08:00"}
+{"event": "block_accepted", "counter": 29, "offset": 14280, "bytes": 510, "at": "2026-11-09T22:44:01.034150+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.034204+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.066774+08:00"}
+{"event": "block_accepted", "counter": 30, "offset": 14790, "bytes": 510, "at": "2026-11-09T22:44:01.076160+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.076239+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.109121+08:00"}
+{"event": "block_accepted", "counter": 31, "offset": 15300, "bytes": 510, "at": "2026-11-09T22:44:01.118250+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.118358+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.152538+08:00"}
+{"event": "block_accepted", "counter": 32, "offset": 15810, "bytes": 510, "at": "2026-11-09T22:44:01.162144+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.162217+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.194777+08:00"}
+{"event": "block_accepted", "counter": 33, "offset": 16320, "bytes": 510, "at": "2026-11-09T22:44:01.204076+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.204150+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.236866+08:00"}
+{"event": "block_accepted", "counter": 34, "offset": 16830, "bytes": 510, "at": "2026-11-09T22:44:01.246176+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.246247+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.279399+08:00"}
+{"event": "block_accepted", "counter": 35, "offset": 17340, "bytes": 510, "at": "2026-11-09T22:44:01.288948+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.289028+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.322066+08:00"}
+{"event": "block_accepted", "counter": 36, "offset": 17850, "bytes": 510, "at": "2026-11-09T22:44:01.331160+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.331278+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.364082+08:00"}
+{"event": "block_accepted", "counter": 37, "offset": 18360, "bytes": 510, "at": "2026-11-09T22:44:01.372941+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.373032+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.406121+08:00"}
+{"event": "block_accepted", "counter": 38, "offset": 18870, "bytes": 510, "at": "2026-11-09T22:44:01.415077+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.415147+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.447961+08:00"}
+{"event": "block_accepted", "counter": 39, "offset": 19380, "bytes": 510, "at": "2026-11-09T22:44:01.456995+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.457066+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.489725+08:00"}
+{"event": "block_accepted", "counter": 40, "offset": 19890, "bytes": 510, "at": "2026-11-09T22:44:01.499075+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.499155+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.533116+08:00"}
+{"event": "block_accepted", "counter": 41, "offset": 20400, "bytes": 510, "at": "2026-11-09T22:44:01.542093+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.542255+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.575330+08:00"}
+{"event": "block_accepted", "counter": 42, "offset": 20910, "bytes": 510, "at": "2026-11-09T22:44:01.585068+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.585192+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.618727+08:00"}
+{"event": "block_accepted", "counter": 43, "offset": 21420, "bytes": 510, "at": "2026-11-09T22:44:01.628042+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.628141+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.661694+08:00"}
+{"event": "block_accepted", "counter": 44, "offset": 21930, "bytes": 510, "at": "2026-11-09T22:44:01.671056+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.671155+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.705133+08:00"}
+{"event": "block_accepted", "counter": 45, "offset": 22440, "bytes": 510, "at": "2026-11-09T22:44:01.714086+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.714163+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.747087+08:00"}
+{"event": "block_accepted", "counter": 46, "offset": 22950, "bytes": 510, "at": "2026-11-09T22:44:01.755958+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.756068+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.788590+08:00"}
+{"event": "block_accepted", "counter": 47, "offset": 23460, "bytes": 510, "at": "2026-11-09T22:44:01.797926+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.798051+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.830623+08:00"}
+{"event": "block_accepted", "counter": 48, "offset": 23970, "bytes": 510, "at": "2026-11-09T22:44:01.839878+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.839949+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.872880+08:00"}
+{"event": "block_accepted", "counter": 49, "offset": 24480, "bytes": 510, "at": "2026-11-09T22:44:01.882014+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.882086+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.915130+08:00"}
+{"event": "block_accepted", "counter": 50, "offset": 24990, "bytes": 510, "at": "2026-11-09T22:44:01.923952+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.924032+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.957306+08:00"}
+{"event": "block_accepted", "counter": 51, "offset": 25500, "bytes": 510, "at": "2026-11-09T22:44:01.965965+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:01.966030+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:01.999867+08:00"}
+{"event": "block_accepted", "counter": 52, "offset": 26010, "bytes": 510, "at": "2026-11-09T22:44:02.009032+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.009157+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.042646+08:00"}
+{"event": "block_accepted", "counter": 53, "offset": 26520, "bytes": 510, "at": "2026-11-09T22:44:02.051984+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.052053+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.085116+08:00"}
+{"event": "block_accepted", "counter": 54, "offset": 27030, "bytes": 510, "at": "2026-11-09T22:44:02.093961+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.094057+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.127452+08:00"}
+{"event": "block_accepted", "counter": 55, "offset": 27540, "bytes": 510, "at": "2026-11-09T22:44:02.137011+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.137090+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.170722+08:00"}
+{"event": "block_accepted", "counter": 56, "offset": 28050, "bytes": 510, "at": "2026-11-09T22:44:02.179988+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.180090+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.213162+08:00"}
+{"event": "block_accepted", "counter": 57, "offset": 28560, "bytes": 510, "at": "2026-11-09T22:44:02.222002+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.222099+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.255225+08:00"}
+{"event": "block_accepted", "counter": 58, "offset": 29070, "bytes": 510, "at": "2026-11-09T22:44:02.263861+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.263948+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.297395+08:00"}
+{"event": "block_accepted", "counter": 59, "offset": 29580, "bytes": 510, "at": "2026-11-09T22:44:02.305964+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.306075+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.339742+08:00"}
+{"event": "block_accepted", "counter": 60, "offset": 30090, "bytes": 510, "at": "2026-11-09T22:44:02.348898+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.349012+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.383028+08:00"}
+{"event": "block_accepted", "counter": 61, "offset": 30600, "bytes": 510, "at": "2026-11-09T22:44:02.391902+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.391974+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.425124+08:00"}
+{"event": "block_accepted", "counter": 62, "offset": 31110, "bytes": 510, "at": "2026-11-09T22:44:02.433821+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.433899+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.466762+08:00"}
+{"event": "block_accepted", "counter": 63, "offset": 31620, "bytes": 510, "at": "2026-11-09T22:44:02.475883+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.475985+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.510084+08:00"}
+{"event": "block_accepted", "counter": 64, "offset": 32130, "bytes": 510, "at": "2026-11-09T22:44:02.518908+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.518992+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.551835+08:00"}
+{"event": "block_accepted", "counter": 65, "offset": 32640, "bytes": 510, "at": "2026-11-09T22:44:02.560873+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.560946+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.594582+08:00"}
+{"event": "block_accepted", "counter": 66, "offset": 33150, "bytes": 510, "at": "2026-11-09T22:44:02.603936+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.604048+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.637767+08:00"}
+{"event": "block_accepted", "counter": 67, "offset": 33660, "bytes": 510, "at": "2026-11-09T22:44:02.646808+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.646877+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.680169+08:00"}
+{"event": "block_accepted", "counter": 68, "offset": 34170, "bytes": 510, "at": "2026-11-09T22:44:02.689058+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.689211+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.723289+08:00"}
+{"event": "block_accepted", "counter": 69, "offset": 34680, "bytes": 510, "at": "2026-11-09T22:44:02.731862+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.731973+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.771505+08:00"}
+{"event": "block_accepted", "counter": 70, "offset": 35190, "bytes": 510, "at": "2026-11-09T22:44:02.780902+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.781035+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.816216+08:00"}
+{"event": "block_accepted", "counter": 71, "offset": 35700, "bytes": 510, "at": "2026-11-09T22:44:02.824820+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.824930+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.859129+08:00"}
+{"event": "block_accepted", "counter": 72, "offset": 36210, "bytes": 510, "at": "2026-11-09T22:44:02.867828+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.867929+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.902081+08:00"}
+{"event": "block_accepted", "counter": 73, "offset": 36720, "bytes": 510, "at": "2026-11-09T22:44:02.910801+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.910905+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.944475+08:00"}
+{"event": "block_accepted", "counter": 74, "offset": 37230, "bytes": 510, "at": "2026-11-09T22:44:02.954028+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.954140+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:02.988028+08:00"}
+{"event": "block_accepted", "counter": 75, "offset": 37740, "bytes": 510, "at": "2026-11-09T22:44:02.996835+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:02.996932+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.031099+08:00"}
+{"event": "block_accepted", "counter": 76, "offset": 38250, "bytes": 510, "at": "2026-11-09T22:44:03.039834+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.039980+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.073710+08:00"}
+{"event": "block_accepted", "counter": 77, "offset": 38760, "bytes": 510, "at": "2026-11-09T22:44:03.083099+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.083300+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.118599+08:00"}
+{"event": "block_accepted", "counter": 78, "offset": 39270, "bytes": 510, "at": "2026-11-09T22:44:03.127745+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.127848+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.162087+08:00"}
+{"event": "block_accepted", "counter": 79, "offset": 39780, "bytes": 510, "at": "2026-11-09T22:44:03.170826+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.170928+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.204138+08:00"}
+{"event": "block_accepted", "counter": 80, "offset": 40290, "bytes": 510, "at": "2026-11-09T22:44:03.212771+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.212835+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.246196+08:00"}
+{"event": "block_accepted", "counter": 81, "offset": 40800, "bytes": 510, "at": "2026-11-09T22:44:03.254767+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.254874+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.289870+08:00"}
+{"event": "block_accepted", "counter": 82, "offset": 41310, "bytes": 510, "at": "2026-11-09T22:44:03.298805+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.298884+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.333335+08:00"}
+{"event": "block_accepted", "counter": 83, "offset": 41820, "bytes": 510, "at": "2026-11-09T22:44:03.341691+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.341837+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.375632+08:00"}
+{"event": "block_accepted", "counter": 84, "offset": 42330, "bytes": 510, "at": "2026-11-09T22:44:03.384622+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.384851+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.418312+08:00"}
+{"event": "block_accepted", "counter": 85, "offset": 42840, "bytes": 510, "at": "2026-11-09T22:44:03.426973+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.427048+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.459705+08:00"}
+{"event": "block_accepted", "counter": 86, "offset": 43350, "bytes": 510, "at": "2026-11-09T22:44:03.468664+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.468728+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.502487+08:00"}
+{"event": "block_accepted", "counter": 87, "offset": 43860, "bytes": 510, "at": "2026-11-09T22:44:03.511734+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 512, "at": "2026-11-09T22:44:03.511812+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.545642+08:00"}
+{"event": "block_accepted", "counter": 88, "offset": 44370, "bytes": 510, "at": "2026-11-09T22:44:03.554851+08:00"}
+{"event": "request_started", "sid": "36", "bytes": 42, "at": "2026-11-09T22:44:03.554953+08:00"}
+{"event": "pending", "sid": "36", "count": 1, "at": "2026-11-09T22:44:03.559864+08:00"}
+{"event": "block_accepted", "counter": 89, "offset": 44880, "bytes": 40, "at": "2026-11-09T22:44:03.562714+08:00"}
+{"event": "request_started", "sid": "37", "bytes": 1, "at": "2026-11-09T22:44:03.562777+08:00"}
+{"event": "pending", "sid": "37", "count": 1, "at": "2026-11-09T22:44:03.564409+08:00"}
+{"event": "request_started", "sid": "31", "bytes": 4, "at": "2026-11-09T22:44:03.883620+08:00"}
+{"event": "pending", "sid": "31", "count": 1, "at": "2026-11-09T22:44:03.885477+08:00"}
+{"event": "download_committed", "blocks": 89, "at": "2026-11-09T22:44:04.153008+08:00"}
+{"event": "request_started", "sid": "11", "bytes": 2, "at": "2026-11-09T22:44:04.153094+08:00"}
+{"event": "reset_requested", "at": "2026-11-09T22:44:04.154669+08:00"}
+{"event": "completed", "version": 24, "payload_bytes": 44824, "package_bytes": 44920, "load_address": "0x8010000", "payload_crc32": "D6B888DB", "package_sha256": "01c9650129cb6653eb615e9167835e97f99847d24fb87770ec3e74762a599dde", "signature_verified": false, "signed": true, "blocks": 89, "reset_requested": true, "application_health_confirmed": false, "backend": "python-can", "at": "2026-11-09T22:44:04.154727+08:00"}
