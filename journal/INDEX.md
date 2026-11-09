@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-09 | 决策（推翻前提） | [断电方案定稿前，先拆掉三个会带偏实验的前提](entries/2026-11-09-power-cut-plan-and-three-corrected-premises.md) | power-cut, iwdg, nor-erase, 假断电, 简历边界 | N |
 | 2026-11-09 | 验证（实机/完整 OTA） | [真实 CAN 上第一次跑完整 OTA：89 块全接受，18.55 秒，读回逐字节相同](entries/2026-11-09-real-can-full-ota-passed.md) | real-can, ota, iso-tp, v24, ticket, 18.55s, 简历 | Y |
 | 2026-11-09 | 排障（实机/A-B） | [真实 CAN 完整 OTA 首次接线：A/B 对照把固件摘干净，卡点回到供电](entries/2026-11-09-can-ota-bringup-ab-rules-out-firmware.md) | can-ota, a-b-control, ch340, 2.87V, 证据覆盖, 证据边界 | N |
 | 2026-11-07 | 验证（实机/门控） | [NRC 0x72 是设计好的门控；真实 CAN 完整 OTA 只需换传输层](entries/2026-11-07-nrc-72-designed-gate-and-real-can-ota-assessment.md) | nrc-72, storage-trusted, seed-key, iso-tp, ota评估 | Y |
