@@ -1,0 +1,78 @@
+{
+  "title": "真实 CAN 完整 OTA 首次接线执行：A/B 对照排除固件，链路未建立",
+  "date": "2026-11-09",
+  "status": "blocked",
+  "scope": "bring-up only; no OTA traffic was attempted",
+  "environment": {
+    "usb_can": "PCAN-USB (VID_0C72:000C), Status OK, Present=True, 500 kbit/s, baud constant 0x1C",
+    "stlink": "STM32 STLink, Status OK, target voltage 2.87-2.88 V",
+    "usb_232_ch340": "all three historical instances Present=False; no real USB serial port; COM4/5/6/7/10/11 are Bluetooth virtual ports",
+    "reference_voltage_1107": "3.24 V when the same link passed on 2026-11-07",
+    "history": "the 2.87 V value also appeared as the last reading before the probe lost contact during the 2026-11-05 idle power-cut experiment"
+  },
+  "measurements": [
+    {
+      "id": "device_scan",
+      "result": "PCAN-USB OK, STLink OK, CH340 absent",
+      "note": "user reported all three cables connected; enumeration contradicts this for USB_232"
+    },
+    {
+      "id": "flash_backup",
+      "result": "loader-before-can-ota.bin 65536 B, app-before-can-ota.bin 65536 B saved",
+      "note": "SWD upload succeeded at 2.87 V target voltage"
+    },
+    {
+      "id": "writable_loader_flash",
+      "result": "mass erase + download + verify + reset all passed",
+      "image": "stage-d-can/loader/loader.bin 48172 B sha256 0f14d783e2154d1e...",
+      "note": "binary contains 'CAN: normal physical 500 kbit/s' and 'loader diagnostics: request 7E0, response 7E8'; no UART diagnostics strings -> correct CAN build"
+    },
+    {
+      "id": "status_after_writable_loader",
+      "result": "CAN/ISO-TP response timeout",
+      "command": "uds_tool.py status --backend can --interface pcan --channel PCAN_USBBUS1 --bitrate 500000 --request-timeout 120"
+    },
+    {
+      "id": "hard_ack_probe",
+      "result": "50 frames, 0 UDS responses, 0 error frames, 10 echo frames per drain, CAN_GetStatus = 0x0",
+      "note": "CAN_GetStatus 0x0 is NOT evidence of ACK on this clone adapter; it does not report ACK errors"
+    },
+    {
+      "id": "watch_window",
+      "result": "45 s, 9 requests at 5 s intervals, 0 responses, 0 error frames, final status 0x0"
+    },
+    {
+      "id": "ab_control",
+      "result": "reflashed the exact 2026-11-07 passing image (sha256 8a3833885295f7cde4...) with mass erase + verify + reset; still 0 UDS responses",
+      "conclusion": "firmware image, build variant, gating and PC scripts are ruled out"
+    },
+    {
+      "id": "active_tx_probe",
+      "result": "temporary probe firmware emitting 0x7E8 every 250 ms with runtime AFRH/BTR/MCR: 0 frames received",
+      "control": "the identical probe technique received 18 frames in 8 s on 2026-11-07",
+      "conclusion": "board is not acting as a CAN node in this session"
+    },
+    {
+      "id": "swd_registers_hotplug",
+      "result": "RCC_CR=0x03007083 (PLL locked), bxCAN1 MCR=0x00010002 SLEEP=1, BTR=0x01230000 reset value, IER=0; SysTick VAL=0 twice; DHCSR=0x01010000",
+      "note": "SWD hotplug snapshots were proven unreliable on 2026-11-07 (halt/reset artifact); recorded, NOT used as a conclusion"
+    }
+  ],
+  "ruled_out": [
+    "firmware image / build variant (A/B with the exact 2026-11-07 passing binary)",
+    "PCAN driver and PCANBasic API (CAN_Initialize=0x0, CAN_Write=0x0)",
+    "baud rate constant (0x1C verified correct; the 0x001C0000 bug from 2026-11-07 is not present)",
+    "UDS/ISO-TP PC client (same scripts that passed on 2026-11-07)",
+    "gating / NRC 0x72 (no response at all, not a negative response)"
+  ],
+  "not_ruled_out": [
+    "board 5 V rail / CAN transceiver power (NOT measured this session)",
+    "USB_232 physical connection (CH340 did not enumerate)",
+    "CANH/CANL/GND wiring after reconnect (not re-measured this session)",
+    "P5 jumper state (not visually re-confirmed this session)"
+  ],
+  "leading_hypothesis": "USB_232 is not actually connected, so the board has no 5 V feed for the CAN transceiver; ST-Link's 2.87 V target reading is consistent with weak/parasitic supply. This is an inference consistent with all measurements, NOT a measured root cause.",
+  "board_state_at_end": "restored to the original 2026-11-07 read-only diagnostics image (sha256 8a383388...), mass erase + verify + reset passed",
+  "repo_state_at_end": "both repositories clean; the two 2026-11-07 evidence JSONs that were temporarily overwritten by failing probes were restored to their committed passed versions",
+  "boundary": "real CAN full OTA (0x34/0x36/0x37/0x31/0x11) is still UNVERIFIED. Nothing here may be written as passing."
+}

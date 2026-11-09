@@ -1,7 +1,7 @@
-# 真实 CAN 完整 OTA 验收 Runbook（2026-11-09 准备完成，待接线执行）
+# 真实 CAN 完整 OTA 验收 Runbook（2026-11-09 准备完成；首次接线执行受阻，见第 11 节）
 
 > 配套：`REAL_CAN_OTA_ASSESSMENT.md`（改动清单/时序/风险）、`board-docs/05-工具与命令/CAN台架-排障实录.md`（历史坑）。
-> **状态**：不依赖硬件的准备工作已全部完成并实测；**第 1 步之后的硬件步骤尚未执行**，因为 `PCAN-USB` 当前 `Present=False`。命令标注「待验证」的，接线后先核对输出再继续。
+> **状态**：不依赖硬件的准备工作已全部完成并实测；**第 4 步之后的硬件步骤未通过**——2026-11-09 晚首次接线时链路没建起来（`status` 超时），A/B 对照已排除固件，卡点回到板级供电与 `USB_232`。详见第 11 节与 `evidence/can/bringup_20261109_ab.json`。**真实 CAN 完整 OTA 仍未验证。**
 
 ## 0. 已经备好的东西（不依赖硬件，均已实测）
 
@@ -129,3 +129,25 @@ python tools\uds_tool.py status --backend can --interface pcan --channel PCAN_US
 - 终端电阻实测 160 Ω、拨码已在 `120R`，历史多次验收稳定通过，不必先调成 60 Ω。
 - 真实 CAN 上的断电恢复（第 6 步之后拔 CAN 线/断电）是下一项，本轮先不合并。
 - 三个不可逆操作（RDP2 / OTP 单调计数器 / WRP）**先不要动**。
+
+## 11. 首次接线执行记录（2026-11-09 晚，`status=blocked`）
+
+接线后 `PCAN-USB` OK、`STM32 STLink` OK，但 **`USB_232`（CH340）三个实例全 `Present=False`**，COM 列表全是蓝牙虚拟口；ST-Link 目标电压 **2.87–2.88 V**（11-07 打通时是 3.24 V）。
+
+按顺序做完且实测：备份两块 Flash 各 64 KiB → 烧可写 CAN loader（48172 B，全片擦除+校验+复位通过，镜像字符串确认是 CAN 诊断不是 UART）→ `status` 超时 → 50 帧底层探针 / 45 s 观察窗口全部 0 回帧 → **A/B 烧回 11-07 打通过的同一份镜像（`8a383388…`）仍 0 回帧** → 主动发帧探针 0 帧（11-07 同一手法 8 s 收到 18 帧）。
+
+**结论**：固件、构建变体、门控、PC 客户端、驱动、波特率常量全部排除；板子这一刻没有作为 CAN 节点工作。**最可能的推断（未实测）**：`USB_232` 没真正插好 → 5 V 轨没建立 → CAN 收发器不工作；2.87 V 符合弱/寄生供电。3.3 V 域有电不能反推 5 V 有电。
+
+**下次继续前必须先满足**（缺一不要跑 `flash`）：
+
+1. 设备管理器出现真实的 `USB-SERIAL CH340 (COMx)`，且 `/dev` 列表里它不是蓝牙口；
+2. 用电压档量板子 **5 V ↔ GND ≈ 5 V**（这是唯一没实测的关键项）、3.3 V ↔ GND ≈ 3.3 V；ST-Link 目标电压回到 ≈3.24 V；
+3. 重新跑第 1 节 `can_gate_probe.py` 链路自检，能看到 `0x7E8`；
+4. 读 COM 开机横幅，确认 `CAN: normal physical 500 kbit/s` 与 `loader diagnostics: request 7E0, response 7E8`。
+
+**两个新坑**（已写进 `journal/entries/2026-11-09-can-ota-bringup-ab-rules-out-firmware.md`）：
+
+- 失败态探针会**覆写已提交的 `evidence/can/*.json`**（`passed` → `failed`）。本轮已 `git checkout` 还原，并把失败结果单独存为 `bringup_20261109_ab.json`；以后跑实验态脚本先改输出路径。
+- `CAN_GetStatus = 0x0` / `bus.state = ACTIVE` **不是 ACK 证据**，兼容适配器不上报 ACK 错误；不能以「状态 OK」当作链路已建立。
+
+板子与两仓库已完整回滚：探针残留 0、MDK 恢复 `--uart` 版、diagnostics bin 恢复 `8a383388…`、板子烧回原版只读固件、工作树干净。

@@ -4,6 +4,7 @@
 
 | 日期 | 类型 | 标题 | 关键词 | 可写进简历 |
 |---|---|---|---|---|
+| 2026-11-09 | 排障（实机/A-B） | [真实 CAN 完整 OTA 首次接线：A/B 对照把固件摘干净，卡点回到供电](entries/2026-11-09-can-ota-bringup-ab-rules-out-firmware.md) | can-ota, a-b-control, ch340, 2.87V, 证据覆盖, 证据边界 | N |
 | 2026-11-07 | 验证（实机/门控） | [NRC 0x72 是设计好的门控；真实 CAN 完整 OTA 只需换传输层](entries/2026-11-07-nrc-72-designed-gate-and-real-can-ota-assessment.md) | nrc-72, storage-trusted, seed-key, iso-tp, ota评估 | Y |
 | 2026-11-07 | 验证（实机/通信） | [真实 CAN 打通：ISO-TP 多帧 + UDS 0x22 通过；此前 BUSOFF 是判据自己的波特率 bug](entries/2026-11-07-real-can-uds-multiframe-passed-and-baudrate-probe-bug.md) | real-can, iso-tp, uds, VIN, pcan, 判据校验 | Y |
 | 2026-11-07 | 决策（推翻旧判断） | [开机横幅证明固件正常：断点收敛到 P5 一根跳线](entries/2026-11-07-boot-banner-clears-firmware-p5-last-link.md) | boot-banner, 500kbit/s, pclk1, P5, 调试器halt, 证据边界 | N |
