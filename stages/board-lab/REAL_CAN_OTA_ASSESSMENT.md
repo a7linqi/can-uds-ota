@@ -33,14 +33,27 @@ OTA_EXPLORER_HANDOFF_CAPABLE=1, OTA_EXPLORER_BOOT_ROLE=1
 
 `app` 变体：`FLASHING=0 / BOOT_HANDOFF=0 / UPDATE_CAPABLE=0 / STORAGE_TRUSTED=1 / BOOT_ROLE=2`。
 
-**关键前置**：`build_stage_d.py` 的 `target_sources()` 从 `mdk/explorer_readonly.uvprojx` 继承 defines。当前工程是 `--uart` 版（`OTA_DIAG_UART=1`），直接跑会生成 **UART 诊断** 固件。必须先：
+**关键前置（2026-11-09 实测补正）**：`build-temp/build_stage_d.py` 里 **`TARGET = "explorer_ZG_uart_READONLY"` 是硬编码的**，`target_sources()` 按这个名字从 `mdk/explorer_readonly.uvprojx` 取 defines。因此：
+
+- 直接跑原脚本 → 生成 **UART 诊断** 固件；
+- 只把工程换成 diagnostics 版、不改脚本 → 找不到该 target，`StopIteration` 崩溃；
+- 脚本用**位置参数** `loader app`，没有 `--only`。
+
+正确做法（已实测跑通）：
 
 ```powershell
-python tools/generate_explorer_mdk.py --dfp <DFP> --cmsis <CMSIS>   # 不带 --uart，生成 diagnostics target
-python build-temp/build_stage_d.py --only loader app
+# 1. 备份并生成 diagnostics 版工程（不带 --uart）
+python tools/generate_explorer_mdk.py --dfp <DFP> --cmsis <CMSIS>
+# 2. 复制 build_stage_d.py 为 build_stage_d_can.py，只改两行：
+#    TARGET = "explorer_ZG_diagnostics_READONLY"
+#    OUT    = ROOT / "build-temp/stage-d-can"
+python build-temp/build_stage_d_can.py loader app
+# 3. 构建完把 MDK 工程恢复成原版，避免污染活库
 ```
 
-`OTA_DIAG_UART` 不在 `build_stage_d.py` 的 `OWNED` 列表里，会继承工程的 `0` → 得到 CAN 诊断 + 可写门控的固件。
+diagnostics target 的 defines 含 `OTA_DIAG_UART=0`、`OTA_EXPLORER_CAN_LOOPBACK=0`，且不在 `OWNED` 列表里，会被继承 → CAN 诊断 + 可写门控。
+
+**2026-11-09 实测产物**：`build-temp/stage-d-can/loader/loader.bin` = 48172 B（sha256 `0f14d783…`）、`app/app.bin` = 44824 B（sha256 `47f604c1…`）。`app.bin` 与历史 `pkgs/app_v14.img2` 剥掉 32 B 头 + 64 B 签名后的 payload **逐字节相同**（同为 `47f604c1…`），所以 v14 包可直接复用；需要更高版本时用 `tools/make_image.py <bin> <out> --version N --sign`。
 
 然后烧 `loader` 到 `0x08000000`、初始 `app` 到 `0x08010000`，建立基线。注意**烧完要重新验证 CAN 链路**（新固件的 `0x10 02` 会打开 `programming_allowed`）。
 
@@ -61,9 +74,18 @@ python build-temp/build_stage_d.py --only loader app
   ```
 - 或把 `uds_stage_d.py` 的 transport 构造替换掉，保留它现成的 `ask()` 记录与 `0x11` 后抓串口横幅的逻辑。
 
-### C. 必须补的一件事：`3E 00` 保活
+### C. `3E 00` 保活：**不需要**（2026-11-09 源码核查更正）
 
-`0x10 02` 正响应 `50 02 00 32 01 F4` → P2 = 50 ms、**P2\* / S3 = 5000 ms**。下载预计 20–40 s，不发 `3E 00` 会同时清掉会话与解锁，`0x34` 回 `0x22`（此前 UART 台架踩过）。要么在下载循环里定期发 `3E 00`，要么把会话超时配长。
+此前写「必须补 `3E 00` 保活」是过度保守，源码明确否定：
+
+- `include/ota/uds.h:15`：`UDS_S3_TIMEOUT_MS 5000u`；
+- `src/core/uds.c:573-575`：超时判据是 `(now - s->last_request_ms) > S3`，而 `uds.c:595` **每个请求都刷新** `last_request_ms`；
+- `src/core/uds.c:626-628` 注释：「S3 is an idle timeout: time spent processing a synchronous storage job does not count」，同步 job 结束也会刷新；
+- `platform/stm32f407/src/stm32_diag.c:38-39`：「S3 does not expire while this server is processing its current job」，`d->uds.last_request_ms=now`；`:175` 在 job 完成时再次刷新。
+
+因此 `0x34` 那 13.8 s 的 NOR 擦除期间不计时，89 个 `0x36` 每块间隔也远小于 5 s —— 与 UART 台架实测跑通 30+ s 下载完全吻合，**不必发 `3E 00`**。`UdsClient.request()` 已支持 `0x78` ResponsePending 并把超时切到 P2\*，`uds_tool.py --request-timeout` 默认 120 s 足够。
+
+**边界**：真实 CAN 上仍要记录每个 `0x36` 的耗时；只有出现单次 > 5 s 的间隔（流控卡住）会话才会掉，届时才考虑插 `3E 00` 或延长 S3。**未在真实 CAN 实测过**，属源码推断 + UART 台架旁证。
 
 ### D. 签名包
 
@@ -107,3 +129,5 @@ UART 台架历史实测：`0x34` 擦 1 MiB 槽 **13.8–14.3 s**；89 个 `0x36`
 ## 6. 边界
 
 本文件是**评估**，不是已完成的验证。真实 CAN 上目前只跑通只读诊断（含 ISO-TP 多帧、Seed/Key、门控遥测），完整 `0x34…0x37` → 安装链路仍只在 UART 台架实机验证过。**不得据此写成「真实 CAN OTA 已通过」。**
+
+**执行清单**：`REAL_CAN_OTA_RUNBOOK.md`（2026-11-09 已把不依赖硬件的准备工作做完：可写 CAN loader/app 已构建、签名包已核对、PC 工具与命令已确认；剩余步骤等 `PCAN-USB` 接回来后照单执行）。
